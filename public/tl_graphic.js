@@ -646,9 +646,9 @@ var TL_Graphic = {
     tl_graphic_container_nameplate.style.left = (g_circle_coords.left - shift) + 'px';
     var tl_graphic_container_nameplate_coords = TL_Utils.getCoords(tl_graphic_container_nameplate);
     var tl_graphic_nameplate = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate')[0];
-    var right = tl_graphic_main.clientWidth - tl_graphic_nameplate.clientWidth - tl_graphic_container_nameplate_coords.left;
+    var right = tl_graphic_main.getAttribute('width') - tl_graphic_nameplate.clientWidth - tl_graphic_container_nameplate_coords.left;
     if (right < 0) {
-      tl_graphic_nameplate.style.left = (right + 20) + 'px';
+      tl_graphic_nameplate.style.left = (right + 35) + 'px';
     } else if (tl_graphic_container_nameplate_coords.left < 0) {
       tl_graphic_nameplate.style.left = tl_graphic_container_nameplate_coords.left * (-1) + 'px';
     } else {
@@ -681,6 +681,15 @@ var TL_Graphic = {
       tl_graphic_head.innerHTML = '<div>' + TL_Lang[TL_Lang.current]['followers'] + '</div>';
       element.appendChild(tl_graphic_head);
     });
+    this.xs = []; this.ys = [];
+    this.max_y = 0; this.color = 'transparent';
+    this.title = ''; this.brush_width = 3; this.graphic = true;
+    this.graphic_width = 0; this.graphic_height = 0;
+    this.step_x = 0; this.step_y = 0; this.parts_x = 5; this.parts_y = 5;
+    this.compress_x = 50; this.compress_y = 70; this.minigraphic = true;
+    this.minigraphic_width = 0; this.minigraphic_height = 0;
+    this.graphic_buttons = true; this.night_mode = true;
+    this.dark_theme = false; this.nameplate = true;
   },
   activeDarkTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['day_mode'];
@@ -722,9 +731,24 @@ var TL_Graphic = {
 window.onload = function() {
   TL_Graphic.draw();
 };
-window.onresize = function() {
+(function() {
+  var throttle = function(type, name, obj) {
+    obj = obj || window;
+    var running = false;
+    var func = function() {
+      if (running) { return; }
+      running = true;
+      requestAnimationFrame(function() {
+        obj.dispatchEvent(new CustomEvent(name));
+        running = false;
+      });
+    };
+    obj.addEventListener(type, func);
+  };
+  throttle("resize", "optimizedResize");
+})();
+window.addEventListener("optimizedResize", function() {
   if (!TL_Utils.isPhone()) {
-    TL_Graphic.clear();
-    TL_Graphic.draw();
+    location.reload();
   }
-};
+});
