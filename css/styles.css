@@ -236,12 +236,12 @@ body {
 }
 .tl_graphic_grid .tl_graphic_container_nameplate {
   position: absolute;
-  overflow: hidden;
-  top: 0;
+  top: -90px;
   bottom: 0;
-  height: 92%;
+  height: auto;
 }
 .tl_graphic_container_nameplate .tl_graphic_nameplate {
+  position: relative;
   padding: 17px;
   border-radius: 5px;
   background: #fff;
@@ -322,6 +322,7 @@ body {
   background: #3b4a5a;
 }
 .tl_graphic_container_nameplate .tl_graphic_nameplate_dark {
+  position: relative;
   padding: 17px;
   border-radius: 5px;
   background: #253241;
