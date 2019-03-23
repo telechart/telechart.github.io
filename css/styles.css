@@ -1,0 +1,350 @@
+/* Maybe Less? */
+
+body {
+  font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.tl_red {
+  background: #ed685f;
+}
+.tl_green {
+  background: #3cc23f;
+}
+.tl_white {
+  color: #fff;
+}
+.tl_night {
+  background: #242f3e;
+}
+.tl_graphic_hide {
+  display: none;
+}
+.tl_graphic_container {
+  padding: 0 20px 50px 20px;
+}
+.tl_graphic_container-animation {
+  animation: tl_graphic_container 0.1s 1 ease-in-out;
+}
+@keyframes tl_graphic_container {
+  from {
+    background: transparent;
+  }
+  to {
+    background: #fff;
+  }
+}
+.tl_graphic_head div {
+  font-size: 22px;
+  font-weight: bold;
+  padding: 40px 0 40px 10px;
+}
+.tl_graphic_grid {
+  position: relative;
+  font-size: 15px;
+}
+.tl_graphic_grid .tl_graphic_coordinates_next {
+  position: absolute;
+  display: none;
+  top: 0;
+}
+.tl_graphic_grid .tl_y_coordinate {
+  margin-bottom: 50px;
+  overflow: hidden;
+}
+.tl_graphic_grid .tl_y_coordinate .tl_x_line {
+  border-bottom: 1px solid #f2f4f5;
+  padding-bottom: 5px;
+  color: #96a2aa;
+}
+.tl_graphic_grid .tl_x_coordinate {
+  position: relative;
+  font-size: 15px;
+  padding: 15px 0 0px 15px;
+  height: 20px;
+}
+.tl_x_coordinate .tl_y_line {
+  position: absolute;
+  color: #8c8c8c;
+  float: right;
+  width: 50px;
+}
+.tl_graphic_container .tl_graphic_main {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+}
+.tl_line {
+  position: absolute;
+  height: 3px;
+}
+.tl_point {
+  position: absolute;
+  border-radius: 3px;
+  width: 3px;
+  height: 3px;
+}
+.tl_minigraphic_grid {
+  position: relative;
+  height: 115px;
+}
+.tl_minigraphic_grid .tl_minigraphic_opacity {
+  position: absolute;
+  top: 0;
+  width: 75%;
+  height: inherit;
+  background: #f5f9fb;
+  z-index: 1;
+  opacity: 0.5;
+}
+.tl_minigraphic_grid .tl_minigraphic_opacity_right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: inherit;
+  background: #f5f9fb;
+  z-index: 1;
+  opacity: 0.5;
+}
+.tl_minigraphic_grid .tl_minigraphic_main {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: inherit;
+}
+.tl_minigraphic_grid .tl_minigraphic_scroller {
+  position: relative;
+  top: 0;
+  left: 75%;
+  width: 25%;
+  height: 111px;
+  background: #ddeaf3;
+  padding: 2px 0 2px 0;
+}
+.tl_minigraphic_scroller .tl_minigraphic_scroller_spinner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+.tl_minigraphic_grid .tl_minigraphic_scroller_transparent {
+  position: absolute;
+  top: 0;
+  left: 75%;
+  width: 25%;
+  height: 111px;
+  background: transparent;
+  padding: 2px 0 2px 0;
+  z-index: 1;
+}
+.tl_graphic_buttons {
+  display: table;
+  margin: 40px 0 0 0;
+}
+.tl_graphic_buttons .tl_graphic_buttons_row {
+  display: table-row;
+}
+.tl_graphic_buttons .tl_graphic_buttons_cell {
+  display: table-cell;
+  padding-right: 20px;
+}
+.tl_graphic_button {
+  display: flex;
+  overflow: hidden;
+  border: 2px solid #e6ecf0;
+  border-radius: 50px;
+  padding: 15px 20px 15px 10px;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.tl_checkbox_container {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border: 5px solid transparent;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition-property: background-color;
+  transition-duration: 0.2s;
+}
+.tl_checkbox_container--animation {
+  animation: tl_checkbox_container 0.2s 1 ease-in-out;
+}
+@keyframes tl_checkbox_container {
+  from {
+    box-shadow: 0 0 0 black;
+  }
+  20% {
+    box-shadow: 0 0 30px black;
+  }
+  to {
+    box-shadow: 0 0 100px black;
+  }
+}
+.tl_graphic_buttons_cell input[type="checkbox"] {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+.tl_scheckbox {
+  position: absolute;
+  width: 100%;
+}
+.tl_scheckbox .tl_scheckbox_stroke {
+  stroke: #fff;
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+.tl_graphic_buttons_cell .tl_graphic_title {
+  margin-left: 40px;
+  font-size: 15px;
+  color: #43484b;
+}
+.tl_night_mode {
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  color: #108be3;
+  margin: 150px 0 0 0;
+  user-select: none;
+}
+.tl_night_mode span {
+  cursor: pointer;
+}
+.tl_graphic_main .g_circle {
+  opacity: 0;
+  fill: #fff;
+}
+.tl_graphic_main .g_circle_parallel {
+  cursor: pointer;
+  opacity: 1;
+}
+.tl_graphic_main .g_circle:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+.tl_graphic_grid .tl_graphic_container_nameplate {
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  bottom: 0;
+  height: 92%;
+}
+.tl_graphic_container_nameplate .tl_graphic_nameplate {
+  padding: 17px;
+  border-radius: 5px;
+  background: #fff;
+  border: 2px solid #e3e3e3;
+}
+.tl_graphic_nameplate .tl_graphic_nameplate_x {
+  font-size: 16px;
+  text-align: left;
+  margin-bottom: 15px;
+}
+.tl_graphic_nameplate .tl_graphic_nameplate_y {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  overflow: hidden;
+}
+.tl_graphic_nameplate_y .tl_graphic_nameplate_y_c {
+  display: table-cell;
+  padding-right: 15px;
+}
+.tl_graphic_container_nameplate .tl_graphic_nameplate_line {
+  margin: 0 auto;
+  width: 2px;
+  height: 100%;
+  background: #e3e3e3;
+}
+/* dark theme */
+.tl_graphic_container_dark {
+  background: #242f3e;
+}
+.tl_graphic_container_dark--animation {
+  animation: tl_graphic_container_dark 0.1s 1 ease-in-out;
+}
+@keyframes tl_graphic_container_dark {
+  from {
+    background: transparent;
+  }
+  to {
+    background: #242f3e;
+  }
+}
+.tl_graphic_container_dark .tl_graphic_head_dark {
+  color: #fff;
+}
+.tl_y_coordinate .tl_x_line_dark {
+  border-bottom: 1px solid #313d4d;
+  padding-bottom: 5px;
+  color: #546778;
+}
+.tl_x_coordinate .tl_y_line_dark {
+  position: absolute;
+  color: #546778;
+  float: right;
+  width: 50px;
+}
+.tl_graphic_button_dark {
+  display: flex;
+  overflow: hidden;
+  border: 2px solid #344658;
+  border-radius: 50px;
+  padding: 15px 20px 15px 10px;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.tl_graphic_button_dark .tl_graphic_title_dark {
+  margin-left: 40px;
+  font-size: 15px;
+  color: #fff;
+}
+.tl_graphic_main .g_circle_dark {
+  fill: #242f3e;
+}
+.tl_graphic_container_nameplate .tl_graphic_nameplate_line_dark {
+  margin: 0 auto;
+  width: 2px;
+  height: 100%;
+  background: #3b4a5a;
+}
+.tl_graphic_container_nameplate .tl_graphic_nameplate_dark {
+  padding: 17px;
+  border-radius: 5px;
+  background: #253241;
+  border: 2px solid #202a37;
+}
+.tl_graphic_nameplate_dark .tl_graphic_nameplate_x {
+  font-size: 16px;
+  color: #fff;
+  text-align: left;
+  margin-bottom: 15px;
+}
+.tl_graphic_nameplate_dark .tl_graphic_nameplate_y {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  overflow: hidden;
+}
+.tl_minigraphic_grid .tl_minigraphic_opacity_dark {
+  background: #1f2a38;
+}
+.tl_minigraphic_grid .tl_minigraphic_opacity_right_dark {
+  background: #1f2a38;
+}
+.tl_minigraphic_grid .tl_minigraphic_scroller_dark {
+  background: #40566b;
+}
+.tl_minigraphic_scroller .tl_minigraphic_scroller_spinner_dark {
+  background: #242f3e;
+}
