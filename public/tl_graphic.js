@@ -93,6 +93,13 @@ var TL_Utils = {
       out.y = e.pageY;
     }
     return out;
+  },
+  isPhone: function() {
+    // Better to do it in a separate library
+    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent)) {
+      return true;
+    }
+    return false;
   }
 };
 
@@ -716,6 +723,8 @@ window.onload = function() {
   TL_Graphic.draw();
 };
 window.onresize = function() {
-  TL_Graphic.clear();
-  TL_Graphic.draw();
+  if (!TL_Utils.isPhone()) {
+    TL_Graphic.clear();
+    TL_Graphic.draw();
+  }
 };
