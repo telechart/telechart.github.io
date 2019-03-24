@@ -384,7 +384,7 @@ var TL_Graphic = {
               Array.from(
                 tl_graphic_container.getElementsByClassName('tl_graphic_main')[0].children
               ).forEach(function(e) {
-                var x = -(new_left * (_that_that.parts_x - 1));
+                var x = -(new_left * _that_that.parts_x);
                 if (e.tagName == 'polyline') {
                   var transform = 'translate(' + x + ', ' + _that_that.graphic_height + ') scale(1, -1)';
                 } else {
@@ -394,7 +394,7 @@ var TL_Graphic = {
                   'transform': transform
                 });
               });
-              var x = new_right * (_that_that.parts_x - 1);
+              var x = new_right * _that_that.parts_x;
               var tl_x_coordinate = tl_graphic_container.getElementsByClassName('tl_x_coordinate')[0];
               tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
           }
