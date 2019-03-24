@@ -141,6 +141,12 @@ var TL_Q = {
       e.classList.remove(ncn);
     });
   },
+  removeNode: function(e) {
+    e.parentNode.removeChild(e);
+  },
+  insertAfter: function(e, re) {
+    return re.parentNode.insertBefore(e, re.nextSibling);
+  },
   attrs: function(e, attrs) {
     for (var key in attrs) {
       e.setAttribute(key, attrs[key]);
@@ -168,7 +174,7 @@ var TL_Graphic = {
   graphic_height: 0,
   step_x: 0,
   step_y: 0,
-  parts_x: 5,
+  parts_x: 4,
   parts_y: 5,
   compress_x: 50,
   compress_y: 70,
@@ -199,7 +205,7 @@ var TL_Graphic = {
   init: function(container, params) {
     var data = params['columns'].slice();
     this.container = container;
-    this.xs = data[0];
+    this.xs = data[0].slice();
     this.xs.splice(0, 1);
     data.splice(0, 1);
     var _that = this;
@@ -264,7 +270,12 @@ var TL_Graphic = {
   drawMarkup: function() {
     this.tl_graphic_grid = document.createElement('div');
     this.tl_graphic_grid.setAttribute('class', 'tl_graphic_grid');
-    this.container.appendChild(this.tl_graphic_grid);
+    TL_Q.insertAfter(
+      this.tl_graphic_grid,
+      document.getElementsByClassName('tl_graphic_head')[
+        TL_Q.getIndexByClassName(this.container, 'tl_graphic_container')
+      ]
+    );
     this.drawAxis(true);
     if (this.graphic) {
       this.tl_graphic_main = document.createElementNS(this.svgns, 'svg');
@@ -314,43 +325,79 @@ var TL_Graphic = {
         var scroller_opacity_right = tl_minigraphic_opacity_right;
         var minigraphic_grid = TL_Q.getParentByClassName(this, 'tl_minigraphic_grid');
         var scroller_coords = TL_Utils.getCoords(scroller);
-        var shift_x = TL_Utils.getPageXY(e).x - scroller_coords.left;
+        var coords_in_block = TL_Utils.getPageXY(e);
+        var resize_area = 20;
+        var shift_x = coords_in_block.x - scroller_coords.left;
         var minigraphic_grid_coords = TL_Utils.getCoords(minigraphic_grid);
+        var flag_event = 0;
+        if (
+          coords_in_block.x < (scroller_coords.left + resize_area) &&
+          coords_in_block.x > scroller_coords.left
+        ) {
+          flag_event = -1;
+        } else if (
+          coords_in_block.x > (scroller_coords.left + scroller.clientWidth - resize_area) &&
+          coords_in_block.x < (scroller_coords.left + scroller.clientWidth)
+        ) {
+          flag_event = 1;
+        }
         document.onmousemove = move;
         document.ontouchmove = move;
         function move(e) {
-          var new_left = TL_Utils.getPageXY(e).x - shift_x - minigraphic_grid_coords.left;
+          var move_coords_in_block = TL_Utils.getPageXY(e);
+          var new_left = move_coords_in_block.x - shift_x - minigraphic_grid_coords.left;
           if (new_left < 0) {
             new_left = 0;
           }
-          var right_dge = minigraphic_grid.offsetWidth - scroller.offsetWidth;
-          if (new_left > right_dge) {
-            new_left = right_dge;
+          switch (flag_event) {
+            case -1:
+              scroller.style.left = new_left + 'px';
+              scroller_transparent.style.left = scroller.style.left;
+              scroller_opacity.style.width = scroller.style.left;
+              scroller.style.width = (minigraphic_grid.clientWidth - scroller_opacity.clientWidth - scroller_opacity_right.clientWidth) + 'px';
+              scroller_transparent.style.width = scroller.style.width;
+              var m = 20 / ((minigraphic_grid.clientWidth / scroller.clientWidth) * 4);
+              _that_that.drawGraphicWithScale(
+                TL_Q.getIndexByClassName(
+                  TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
+                  'tl_graphic_container'
+                ), (6 - m));
+            break;
+            case 1:
+              // TODO::anything
+              var new_right = minigraphic_grid.clientWidth - move_coords_in_block.x;
+              scroller_opacity_right.style.width = new_right + 'px';
+              scroller.style.width = (minigraphic_grid.clientWidth - scroller_opacity.clientWidth - scroller_opacity_right.clientWidth) + 'px';
+              scroller_transparent.style.width = scroller.style.width;
+            break;
+            default:
+              var right_dge = minigraphic_grid.offsetWidth - scroller.offsetWidth;
+              if (new_left > right_dge) {
+                new_left = right_dge;
+              }
+              var new_right = minigraphic_grid.clientWidth - (new_left + scroller.clientWidth);
+              scroller.style.left = new_left + 'px';
+              scroller_transparent.style.left = scroller.style.left;
+              scroller_opacity.style.width = scroller.style.left;
+              scroller_opacity_right.style.width = new_right + 'px';
+              var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
+              Array.from(
+                tl_graphic_container.getElementsByClassName('tl_graphic_main')[0].children
+              ).forEach(function(e) {
+                var x = -(new_left * (_that_that.parts_x - 1));
+                if (e.tagName == 'polyline') {
+                  var transform = 'translate(' + x + ', ' + _that_that.graphic_height + ') scale(1, -1)';
+                } else {
+                  var transform = 'translate(' + x + ', 0)';
+                }
+                TL_Q.attrs(e, {
+                  'transform': transform
+                });
+              });
+              var x = new_right * (_that_that.parts_x - 1);
+              var tl_x_coordinate = tl_graphic_container.getElementsByClassName('tl_x_coordinate')[0];
+              tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
           }
-          var new_right = minigraphic_grid.clientWidth - (new_left + scroller.clientWidth);
-          scroller.style.left = new_left + 'px';
-          scroller_transparent.style.left = scroller.style.left;
-          scroller_opacity.style.width = scroller.style.left;
-          scroller_opacity_right.style.width = new_right + 'px';
-          var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-          Array.from(
-            tl_graphic_container
-            .getElementsByClassName('tl_graphic_main')[0]
-            .children
-          ).forEach(function(e) {
-            var x = -(new_left * (_that_that.parts_x - 1));
-            if (e.tagName == 'polyline') {
-              var transform = 'translate(' + x + ', ' + _that_that.graphic_height + ') scale(1, -1)';
-            } else {
-              var transform = 'translate(' + x + ', 0)';
-            }
-            TL_Q.attrs(e, {
-              'transform': transform
-            });
-          });
-          var x = new_right * (_that_that.parts_x - 1);
-          var tl_x_coordinate = tl_graphic_container.getElementsByClassName('tl_x_coordinate')[0];
-          tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
         }
         document.onmouseup = up;
         document.ontouchend = up;
@@ -422,7 +469,7 @@ var TL_Graphic = {
       this.type.indexOf(this.types) != -1
     ) {
       this.brush_width = 3;
-      this.compress_x = (this.graphic_width / (this.xs.length - 1)) * (this.parts_x - 1);
+      this.compress_x = (this.graphic_width / (this.xs.length - 1)) * this.parts_x;
       this.compress_y = 70;
       this.drawPolyline(
         this.tl_graphic_main,
@@ -448,6 +495,19 @@ var TL_Graphic = {
         false
       );
     }
+  },
+  drawGraphicWithScale: function(id, scale) {
+    this.clearGraphic(id);
+    this.parts_x = scale;
+    this.brush_width = 3;
+    this.minigraphic = false;
+    this.graphic_buttons = false;
+    this.graphic_nameplate = false;
+    this.night_mode = false;
+    this.init(
+      document.getElementsByClassName('tl_graphic_container')[id],
+      TL_Database[id]
+    );
   },
   drawPolyline: function(tl_graphic, graphic_height, graphic_type) {
     var max_y_len = TL_Utils.getLengthOfNumber(this.max_y);
@@ -505,7 +565,7 @@ var TL_Graphic = {
     });
     tl_graphic.appendChild(polyline);
     if (graphic_type) {
-      var x = -(x / (this.parts_x - 1)) * (this.parts_x - 2);
+      var x = -(x / this.parts_x) * (this.parts_x - 1);
       TL_Q.attrs(polyline, {
         'transform': 'translate(' + x + ', ' + graphic_height + ') scale(1, -1)'
       });
@@ -618,6 +678,7 @@ var TL_Graphic = {
       'tl_graphic_container'
     );
     var tl_graphic_nameplate_x = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate_x')[0];
+    index_circle++;
     tl_graphic_nameplate_x.innerText = TL_Utils.convertTimeWithDay(TL_Database[num_c]['columns'][0][index_circle]);
     var tl_graphic_nameplate_y = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate_y')[0];
     tl_graphic_nameplate_y.innerHTML = '';
@@ -629,8 +690,7 @@ var TL_Graphic = {
         TL_Q.attrs(tl_graphic_nameplate_y_c, {
           'class': 'tl_graphic_nameplate_y_c'
         });
-        var iic = index_circle + 1;
-        tl_graphic_nameplate_y_c.innerText = element[iic];
+        tl_graphic_nameplate_y_c.innerText = element[index_circle];
         tl_graphic_nameplate_y_c.style.color = TL_Database[num_c]['colors'][element[0]];
         tl_graphic_nameplate_y.appendChild(tl_graphic_nameplate_y_c);
         var tl_graphic_nameplate_y_name = document.createElement('div');
@@ -669,7 +729,7 @@ var TL_Graphic = {
     var tl_graphic_container_nameplate = tl_graphic_grid.getElementsByClassName('tl_graphic_container_nameplate')[0];
     tl_graphic_container_nameplate.classList.add('tl_graphic_hide');
   },
-  clear: function() {
+  clearAll: function() {
     Array.from(
       document.getElementsByClassName('tl_graphic_container')
     ).forEach(function(element) {
@@ -681,6 +741,14 @@ var TL_Graphic = {
       tl_graphic_head.innerHTML = '<div>' + TL_Lang[TL_Lang.current]['followers'] + '</div>';
       element.appendChild(tl_graphic_head);
     });
+    this.clear();
+  },
+  clearGraphic: function(id) {
+    TL_Q.removeNode(
+      document.getElementsByClassName('tl_graphic_grid')[id]
+    );
+  },
+  clear: function() {
     this.xs = []; this.ys = [];
     this.max_y = 0; this.color = 'transparent';
     this.title = ''; this.brush_width = 3; this.graphic = true;
