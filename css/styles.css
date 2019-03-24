@@ -124,7 +124,12 @@ body {
   width: 25%;
   height: 111px;
   background: #ddeaf3;
+  border-left: 10px solid #ddeaf3;
+  border-right: 10px solid #ddeaf3;
   padding: 2px 0 2px 0;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 .tl_minigraphic_scroller .tl_minigraphic_scroller_spinner {
   position: relative;
@@ -147,11 +152,12 @@ body {
   margin: 40px 0 0 0;
 }
 .tl_graphic_buttons .tl_graphic_buttons_row {
-  display: table-row;
+  display: flex;
+  flex-wrap: wrap;
 }
 .tl_graphic_buttons .tl_graphic_buttons_cell {
   display: table-cell;
-  padding-right: 20px;
+  margin: 0 20px 20px 0;
 }
 .tl_graphic_button {
   display: flex;

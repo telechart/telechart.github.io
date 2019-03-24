@@ -336,8 +336,8 @@ var TL_Graphic = {
         ) {
           flag_event = -1;
         } else if (
-          coords_in_block.x > (scroller_coords.left + scroller.clientWidth - resize_area) &&
-          coords_in_block.x < (scroller_coords.left + scroller.clientWidth)
+          coords_in_block.x > (scroller_coords.left + scroller.offsetWidth - resize_area) &&
+          coords_in_block.x < (scroller_coords.left + scroller.offsetWidth)
         ) {
           flag_event = 1;
         }
@@ -375,7 +375,7 @@ var TL_Graphic = {
               if (new_left > right_dge) {
                 new_left = right_dge;
               }
-              var new_right = minigraphic_grid.clientWidth - (new_left + scroller.clientWidth);
+              var new_right = minigraphic_grid.clientWidth - (new_left + scroller.offsetWidth);
               scroller.style.left = new_left + 'px';
               scroller_transparent.style.left = scroller.style.left;
               scroller_opacity.style.width = scroller.style.left;
@@ -497,6 +497,7 @@ var TL_Graphic = {
     }
   },
   drawGraphicWithScale: function(id, scale) {
+    // TODO::infinity scroll for data charts
     this.clearGraphic(id);
     this.parts_x = scale;
     this.brush_width = 3;
