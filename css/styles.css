@@ -354,6 +354,7 @@ body {
 }
 .tl_minigraphic_grid .tl_minigraphic_scroller_dark {
   background: #40566b;
+  border-color: #40566b;
 }
 .tl_minigraphic_scroller .tl_minigraphic_scroller_spinner_dark {
   background: #242f3e;
