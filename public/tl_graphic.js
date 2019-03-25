@@ -280,8 +280,8 @@ var TL_Graphic = {
     if (this.graphic) {
       this.tl_graphic_main = document.createElementNS(this.svgns, 'svg');
       this.tl_graphic_grid.appendChild(this.tl_graphic_main);
-      this.graphic_width = this.tl_graphic_coordinates.clientWidth;
-      this.graphic_height = this.tl_graphic_coordinates.clientHeight - this.tl_x_coordinate.clientHeight;
+      this.graphic_width = this.tl_graphic_coordinates.offsetWidth;
+      this.graphic_height = this.tl_graphic_coordinates.offsetHeight - this.tl_x_coordinate.offsetHeight;
       TL_Q.attrs(this.tl_graphic_main, {
         'class': 'tl_graphic_main',
         'width': this.graphic_width,
@@ -312,8 +312,8 @@ var TL_Graphic = {
       });
       this.tl_minigraphic_grid.appendChild(this.tl_minigraphic_main);
       this.container.appendChild(this.tl_minigraphic_grid);
-      this.minigraphic_width = this.tl_minigraphic_grid.clientWidth;
-      this.minigraphic_height = this.tl_minigraphic_grid.clientHeight;
+      this.minigraphic_width = this.tl_minigraphic_grid.offsetWidth;
+      this.minigraphic_height = this.tl_minigraphic_grid.offsetHeight;
       var _that_that = this;
       tl_minigraphic_scroller_transparent.onmousedown = down;
       tl_minigraphic_scroller_transparent.ontouchstart = down;
@@ -702,12 +702,12 @@ var TL_Graphic = {
         tl_graphic_nameplate_y_c.appendChild(tl_graphic_nameplate_y_name);
       }
     );
-    var shift = tl_graphic_container_nameplate.clientWidth / 2 + 12;
+    var shift = tl_graphic_container_nameplate.offsetWidth / 2 + 12;
     var g_circle_coords = TL_Utils.getCoords(_that);
     tl_graphic_container_nameplate.style.left = (g_circle_coords.left - shift) + 'px';
     var tl_graphic_container_nameplate_coords = TL_Utils.getCoords(tl_graphic_container_nameplate);
     var tl_graphic_nameplate = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate')[0];
-    var right = tl_graphic_main.getAttribute('width') - tl_graphic_nameplate.clientWidth - tl_graphic_container_nameplate_coords.left;
+    var right = tl_graphic_main.getAttribute('width') - tl_graphic_nameplate.offsetWidth - tl_graphic_container_nameplate_coords.left;
     if (right < 0) {
       tl_graphic_nameplate.style.left = (right + 35) + 'px';
     } else if (tl_graphic_container_nameplate_coords.left < 0) {
