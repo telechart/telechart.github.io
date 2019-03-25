@@ -354,9 +354,9 @@ var TL_Graphic = {
               scroller.style.left = new_left + 'px';
               scroller_transparent.style.left = scroller.style.left;
               scroller_opacity.style.width = scroller.style.left;
-              scroller.style.width = (minigraphic_grid.clientWidth - scroller_opacity.clientWidth - scroller_opacity_right.clientWidth) + 'px';
+              scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
-              var m = 20 / ((minigraphic_grid.clientWidth / scroller.clientWidth) * 4);
+              var m = 20 / ((minigraphic_grid.offsetWidth / scroller.offsetWidth) * 4);
               _that_that.drawGraphicWithScale(
                 TL_Q.getIndexByClassName(
                   TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
@@ -365,9 +365,9 @@ var TL_Graphic = {
             break;
             case 1:
               // TODO::anything
-              var new_right = minigraphic_grid.clientWidth - move_coords_in_block.x;
+              var new_right = minigraphic_grid.offsetWidth - move_coords_in_block.x;
               scroller_opacity_right.style.width = new_right + 'px';
-              scroller.style.width = (minigraphic_grid.clientWidth - scroller_opacity.clientWidth - scroller_opacity_right.clientWidth) + 'px';
+              scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
             break;
             default:
@@ -375,7 +375,7 @@ var TL_Graphic = {
               if (new_left > right_dge) {
                 new_left = right_dge;
               }
-              var new_right = minigraphic_grid.clientWidth - (new_left + scroller.offsetWidth);
+              var new_right = minigraphic_grid.offsetWidth - (new_left + scroller.offsetWidth);
               scroller.style.left = new_left + 'px';
               scroller_transparent.style.left = scroller.style.left;
               scroller_opacity.style.width = scroller.style.left;
