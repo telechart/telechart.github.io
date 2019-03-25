@@ -356,12 +356,13 @@ var TL_Graphic = {
               scroller_opacity.style.width = scroller.style.left;
               scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
-              var m = 20 / ((minigraphic_grid.offsetWidth / scroller.offsetWidth) * 4);
+              var m = 20 / ((minigraphic_grid.offsetWidth / scroller.offsetWidth) * 5);
               _that_that.drawGraphicWithScale(
                 TL_Q.getIndexByClassName(
                   TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
                   'tl_graphic_container'
-                ), (6 - m));
+                ), (5 - m)
+              );
             break;
             case 1:
               // TODO::anything
