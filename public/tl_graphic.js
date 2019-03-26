@@ -203,6 +203,7 @@ var TL_Graphic = {
   dark_theme: false,
   nameplate: true,
   types: ['line'],
+  canvas: false,
   part_y_height: function() {
     return this.compress_y + (this.parts_y - 1);
   },
@@ -543,9 +544,29 @@ var TL_Graphic = {
     var x = 0, y = 0;
     var points = '';
     if (graphic_type) {
-      var g_points = TL_Q.createNS('g', {
-        'class': 'g_points'
+      var x_way = -((this.xs.length * this.compress_x) / this.parts_x) * (this.parts_x - 1);
+      var tl_graphic_points = TL_Q.create('canvas', {
+        'class': 'tl_graphic_points',
+        'width': this.graphic_width,
+        'height': this.graphic_height
       });
+      if (tl_graphic_points.getContext && 0) { // 4K testing
+        this.canvas = true;
+        this.tl_graphic_grid.appendChild(tl_graphic_points);
+      }
+      if (this.canvas) {
+        var ctx = tl_graphic_points.getContext('2d');
+        ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
+        ctx.translate(x_way, 0);
+        ctx.beginPath();
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 10;
+        ctx.fillStyle = '#fff';
+      } else {
+        var g_points = TL_Q.createNS('g', {
+          'class': 'g_points'
+        });
+      }
     }
     var _that = this;
     var prev_y = 0;
@@ -553,23 +574,29 @@ var TL_Graphic = {
       y = this.ys[i] * (this.part_y_height() / this.step_y);
       points += (x + ',' + y + ' ');
       if (graphic_type) {
-        // TODO::Brakes...;()
-        var circle = TL_Q.createNS('circle', {
-          'class': 'g_circle',
-          'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)',
-          'cx': x, 'cy': y, 'r': 7,
-          'style': 'stroke:' + this.color + ';stroke-width:' + (this.brush_width + 1)
-        });
-        circle.addEventListener('mouseover', function() {
-          _that.showNameplate(this);
-        });
-        circle.addEventListener('mouseout', function() {
-          _that.hideNameplate(this);
-        });
-        circle.addEventListener('touchstart', function() {
-          _that.showNameplate(this);
-        });
-        g_points.appendChild(circle);
+        if (this.canvas) {
+          // Speed 4K [canvas points + vector svg]
+          ctx.moveTo(x + 5, y);
+          ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+        } else {
+          // Brakes...;()
+          var circle = TL_Q.createNS('circle', {
+            'class': 'g_circle',
+            'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)',
+            'cx': x, 'cy': y, 'r': 7,
+            'style': 'stroke:' + this.color + ';stroke-width:' + (this.brush_width + 1)
+          });
+          circle.addEventListener('mouseover', function() {
+            _that.showNameplate(this);
+          });
+          circle.addEventListener('mouseout', function() {
+            _that.hideNameplate(this);
+          });
+          circle.addEventListener('touchstart', function() {
+            _that.showNameplate(this);
+          });
+          g_points.appendChild(circle);
+        }
         if (this.tl_x_coordinate.children.length < this.xs.length) {
           var tl_y_line = TL_Q.create('div', {
             'class': 'tl_y_line'
@@ -592,14 +619,19 @@ var TL_Graphic = {
     });
     tl_graphic.appendChild(polyline);
     if (graphic_type) {
-      var x = -(x / this.parts_x) * (this.parts_x - 1);
       TL_Q.attrs(polyline, {
-        'transform': 'translate(' + x + ', ' + graphic_height + ') scale(1, -1)'
+        'transform': 'translate(' + x_way + ', ' + graphic_height + ') scale(1, -1)'
       });
-      TL_Q.attrs(g_points, {
-        'transform': 'translate(' + x + ', 0)'
-      });
-      tl_graphic.appendChild(g_points);
+      if (this.canvas) {
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+      } else {
+        TL_Q.attrs(g_points, {
+          'transform': 'translate(' + x_way + ', 0)'
+        });
+        tl_graphic.appendChild(g_points);
+      }
     } else {
       TL_Q.attrs(polyline, {
         'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)'
