@@ -108,6 +108,7 @@ var TL_Utils = {
 // Maybe jQuery?
 
 var TL_Q = {
+  svgns: 'http://www.w3.org/2000/svg',
   getIndexByClassName: function(e, c_n) {
     var i = 0;
     while ((e = e.previousSibling) != null) {
@@ -146,6 +147,20 @@ var TL_Q = {
   },
   insertAfter: function(e, re) {
     return re.parentNode.insertBefore(e, re.nextSibling);
+  },
+  create: function(rn, attrs) {
+    var e = document.createElement(rn);
+    if (attrs) {
+      this.attrs(e, attrs);
+    }
+    return e;
+  },
+  createNS: function(rn, attrs) {
+    var e = document.createElementNS(this.svgns, rn);
+    if (attrs) {
+      this.attrs(e, attrs);
+    }
+    return e;
   },
   attrs: function(e, attrs) {
     for (var key in attrs) {
@@ -193,7 +208,6 @@ var TL_Graphic = {
   },
   graphics_count: 0,
   cc_graphics_count: 0,
-  svgns: 'http://www.w3.org/2000/svg',
   draw: function() {
     // Maybe TL_Q.getJSON('database/chart_data.json'); ?
     for (var i = 0; i < TL_Database.length; i++) {
@@ -240,8 +254,9 @@ var TL_Graphic = {
     var max_b = this.max_y;
     var max_b_b = max_b;
     var cc_graphic_coordinates = this.tl_graphic_coordinates;
-    this.tl_graphic_coordinates = document.createElement('div');
-    this.tl_graphic_coordinates.setAttribute('class', 'tl_graphic_coordinates');
+    this.tl_graphic_coordinates = TL_Q.create('div', {
+      'class': 'tl_graphic_coordinates'
+    });
     if (cc_graphic_coordinates && this.cc_graphics_count == this.graphics_count) {
       this.tl_graphic_coordinates.classList.add('tl_graphic_coordinates_next');
       this.tl_graphic_grid.insertBefore(this.tl_graphic_coordinates, cc_graphic_coordinates);
@@ -249,19 +264,22 @@ var TL_Graphic = {
       this.tl_graphic_grid.appendChild(this.tl_graphic_coordinates);
     }
     while (max_b >= 0) {
-      this.tl_y_coordinate = document.createElement('div');
-      this.tl_y_coordinate.setAttribute('class', 'tl_y_coordinate');
+      this.tl_y_coordinate = TL_Q.create('div', {
+        'class': 'tl_y_coordinate'
+      });
       this.tl_graphic_coordinates.appendChild(this.tl_y_coordinate);
-      this.tl_x_line = document.createElement('div');
-      this.tl_x_line.setAttribute('class', 'tl_x_line');
+      this.tl_x_line = TL_Q.create('div', {
+        'class': 'tl_x_line'
+      });
       this.tl_x_line.innerText = max_b_b;
       this.tl_y_coordinate.appendChild(this.tl_x_line);
       if (
         max_b_b == 0 &&
         draw_x
       ) {
-        this.tl_x_coordinate = document.createElement('div');
-        this.tl_x_coordinate.setAttribute('class', 'tl_x_coordinate');
+        this.tl_x_coordinate = TL_Q.create('div', {
+          'class': 'tl_x_coordinate'
+        });
         this.tl_y_coordinate.appendChild(this.tl_x_coordinate);
       }
       max_b -= this.step_y; // eg. 166.8 - 55.6
@@ -270,8 +288,9 @@ var TL_Graphic = {
     this.cc_graphics_count = this.graphics_count;
   },
   drawMarkup: function() {
-    this.tl_graphic_grid = document.createElement('div');
-    this.tl_graphic_grid.setAttribute('class', 'tl_graphic_grid');
+    this.tl_graphic_grid = TL_Q.create('div', {
+      'class': 'tl_graphic_grid'
+    });
     TL_Q.insertAfter(
       this.tl_graphic_grid,
       document.getElementsByClassName('tl_graphic_head')[
@@ -280,7 +299,7 @@ var TL_Graphic = {
     );
     this.drawAxis(true);
     if (this.graphic) {
-      this.tl_graphic_main = document.createElementNS(this.svgns, 'svg');
+      this.tl_graphic_main = TL_Q.createNS('svg');
       this.tl_graphic_grid.appendChild(this.tl_graphic_main);
       this.graphic_width = this.tl_graphic_coordinates.offsetWidth;
       this.graphic_height = this.tl_graphic_coordinates.offsetHeight - this.tl_x_coordinate.offsetHeight;
@@ -291,25 +310,30 @@ var TL_Graphic = {
       });
     }
     if (this.minigraphic) {
-      this.tl_minigraphic_grid = document.createElement('div');
-      this.tl_minigraphic_grid.setAttribute('class', 'tl_minigraphic_grid');
-      var tl_minigraphic_opacity = document.createElement('div');
-      tl_minigraphic_opacity.setAttribute('class', 'tl_minigraphic_opacity');
+      this.tl_minigraphic_grid = TL_Q.create('div', {
+        'class': 'tl_minigraphic_grid'
+      });
+      var tl_minigraphic_opacity = TL_Q.create('div', {
+        'class': 'tl_minigraphic_opacity'
+      });
       this.tl_minigraphic_grid.appendChild(tl_minigraphic_opacity);
-      var tl_minigraphic_opacity_right = document.createElement('div');
-      tl_minigraphic_opacity_right.setAttribute('class', 'tl_minigraphic_opacity_right');
+      var tl_minigraphic_opacity_right = TL_Q.create('div', {
+        'class': 'tl_minigraphic_opacity_right'
+      });
       this.tl_minigraphic_grid.appendChild(tl_minigraphic_opacity_right);
-      var tl_minigraphic_scroller = document.createElement('div');
-      tl_minigraphic_scroller.setAttribute('class', 'tl_minigraphic_scroller');
+      var tl_minigraphic_scroller = TL_Q.create('div', {
+        'class': 'tl_minigraphic_scroller'
+      });
       this.tl_minigraphic_grid.appendChild(tl_minigraphic_scroller);
-      var tl_minigraphic_scroller_spinner = document.createElement('div');
-      tl_minigraphic_scroller_spinner.setAttribute('class', 'tl_minigraphic_scroller_spinner');
+      var tl_minigraphic_scroller_spinner = TL_Q.create('div', {
+        'class': 'tl_minigraphic_scroller_spinner'
+      });
       tl_minigraphic_scroller.appendChild(tl_minigraphic_scroller_spinner);
-      var tl_minigraphic_scroller_transparent = document.createElement('div');
-      tl_minigraphic_scroller_transparent.setAttribute('class', 'tl_minigraphic_scroller_transparent');
+      var tl_minigraphic_scroller_transparent = TL_Q.create('div', {
+        'class': 'tl_minigraphic_scroller_transparent'
+      });
       this.tl_minigraphic_grid.appendChild(tl_minigraphic_scroller_transparent);
-      this.tl_minigraphic_main = document.createElementNS(this.svgns, 'svg');
-      TL_Q.attrs(this.tl_minigraphic_main, {
+      this.tl_minigraphic_main = TL_Q.createNS('svg', {
         'class': 'tl_minigraphic_main'
       });
       this.tl_minigraphic_grid.appendChild(this.tl_minigraphic_main);
@@ -417,44 +441,42 @@ var TL_Graphic = {
       };
     }
     if (this.graphic_buttons) {
-      this.tl_graphic_buttons = document.createElement('div');
-      this.tl_graphic_buttons.setAttribute('class', 'tl_graphic_buttons');
-      this.tl_graphic_buttons_row = document.createElement('div');
-      this.tl_graphic_buttons_row.setAttribute('class', 'tl_graphic_buttons_row');
+      this.tl_graphic_buttons = TL_Q.create('div', {
+        'class': 'tl_graphic_buttons'
+      });
+      this.tl_graphic_buttons_row = TL_Q.create('div', {
+        'class': 'tl_graphic_buttons_row'
+      });
       this.tl_graphic_buttons.appendChild(this.tl_graphic_buttons_row);
       this.container.appendChild(this.tl_graphic_buttons);
     }
     if (this.nameplate) {
-      this.tl_graphic_container_nameplate = document.createElement('div');
-      TL_Q.attrs(this.tl_graphic_container_nameplate, {
+      this.tl_graphic_container_nameplate = TL_Q.create('div', {
         'class': 'tl_graphic_container_nameplate tl_graphic_hide'
       });
       this.tl_graphic_grid.appendChild(this.tl_graphic_container_nameplate);
-      this.tl_graphic_nameplate = document.createElement('div');
-      TL_Q.attrs(this.tl_graphic_nameplate, {
+      this.tl_graphic_nameplate = TL_Q.create('div', {
         'class': 'tl_graphic_nameplate'
       });
       this.tl_graphic_container_nameplate.appendChild(this.tl_graphic_nameplate);
-      this.tl_graphic_nameplate_x = document.createElement('div');
-      TL_Q.attrs(this.tl_graphic_nameplate_x, {
+      this.tl_graphic_nameplate_x = TL_Q.create('div', {
         'class': 'tl_graphic_nameplate_x'
       });
       this.tl_graphic_nameplate.appendChild(this.tl_graphic_nameplate_x);
-      this.tl_graphic_nameplate_y = document.createElement('div');
-      TL_Q.attrs(this.tl_graphic_nameplate_y, {
+      this.tl_graphic_nameplate_y = TL_Q.create('div', {
         'class': 'tl_graphic_nameplate_y'
       });
       this.tl_graphic_nameplate.appendChild(this.tl_graphic_nameplate_y);
-      this.tl_graphic_nameplate_line = document.createElement('div');
-      TL_Q.attrs(this.tl_graphic_nameplate_line, {
+      this.tl_graphic_nameplate_line = TL_Q.create('div', {
         'class': 'tl_graphic_nameplate_line'
       });
       this.tl_graphic_container_nameplate.appendChild(this.tl_graphic_nameplate_line);
     }
     if (this.night_mode) {
-      var tl_night_mode = document.createElement('div');
-      tl_night_mode.setAttribute('class', 'tl_night_mode');
-        var tl_night_mode_span = document.createElement('span');
+      var tl_night_mode = TL_Q.create('div', {
+        'class': 'tl_night_mode'
+      });
+        var tl_night_mode_span = TL_Q.create('span');
         tl_night_mode_span.innerHTML = TL_Lang[TL_Lang.current]['night_mode'];
         tl_night_mode.appendChild(tl_night_mode_span);
       this.container.appendChild(tl_night_mode);
@@ -517,12 +539,11 @@ var TL_Graphic = {
   },
   drawPolyline: function(tl_graphic, graphic_height, graphic_type) {
     var max_y_len = TL_Utils.getLengthOfNumber(this.max_y);
-    var polyline = document.createElementNS(this.svgns, 'polyline');
+    var polyline = TL_Q.createNS('polyline');
     var x = 0, y = 0;
     var points = '';
     if (graphic_type) {
-      var g_points = document.createElementNS(this.svgns, 'g');
-      TL_Q.attrs(g_points, {
+      var g_points = TL_Q.createNS('g', {
         'class': 'g_points'
       });
     }
@@ -532,8 +553,8 @@ var TL_Graphic = {
       y = this.ys[i] * (this.part_y_height() / this.step_y);
       points += (x + ',' + y + ' ');
       if (graphic_type) {
-        var circle = document.createElementNS(this.svgns, 'circle');
-        TL_Q.attrs(circle, {
+        // TODO::Brakes...;()
+        var circle = TL_Q.createNS('circle', {
           'class': 'g_circle',
           'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)',
           'cx': x, 'cy': y, 'r': 7,
@@ -550,8 +571,9 @@ var TL_Graphic = {
         });
         g_points.appendChild(circle);
         if (this.tl_x_coordinate.children.length < this.xs.length) {
-          var tl_y_line = document.createElement('div');
-          tl_y_line.setAttribute('class', 'tl_y_line');
+          var tl_y_line = TL_Q.create('div', {
+            'class': 'tl_y_line'
+          });
           tl_y_line.innerText = TL_Utils.convertTime(this.xs[this.xs.length - 1 - i]);
           this.tl_x_coordinate.appendChild(tl_y_line);
           tl_y_line.style.right = x + 'px';
@@ -585,38 +607,37 @@ var TL_Graphic = {
     }
   },
   drawButton: function() {
-    var tl_graphic_buttons_cell = document.createElement('div');
-    tl_graphic_buttons_cell.setAttribute('class', 'tl_graphic_buttons_cell');
-      var tl_graphic_button = document.createElement('div');
-      tl_graphic_button.setAttribute('class', 'tl_graphic_button');
+    var tl_graphic_buttons_cell = TL_Q.create('div', {
+      'class': 'tl_graphic_buttons_cell'
+    });
+      var tl_graphic_button = TL_Q.create('div', {
+        'class': 'tl_graphic_button'
+      });
       tl_graphic_buttons_cell.appendChild(tl_graphic_button);
-        var tl_checkbox_container = document.createElement('div');
-        TL_Q.attrs(tl_checkbox_container, {
+        var tl_checkbox_container = TL_Q.create('div', {
           'class': 'tl_checkbox_container',
           'style': 'border-color: ' + this.color + ';background: ' + this.color + ';'
         });
         tl_graphic_button.appendChild(tl_checkbox_container);
-          var tl_scheckbox = document.createElementNS(this.svgns, 'svg');
-          TL_Q.attrs(tl_scheckbox, {
+          var tl_scheckbox = TL_Q.createNS('svg', {
             'class': 'tl_scheckbox',
             'viewBox': '-295 358 78 78'
           });
           tl_checkbox_container.appendChild(tl_scheckbox);
-            var tl_scheckbox_stroke = document.createElementNS(this.svgns, 'path');
-            TL_Q.attrs(tl_scheckbox_stroke, {
+            var tl_scheckbox_stroke = TL_Q.createNS('path', {
               'class': 'tl_scheckbox_stroke',
               'd': 'M-273.2,398.2l10,9.9 l22.4-22.3'
             });
             tl_scheckbox.appendChild(tl_scheckbox_stroke);
-          var tl_checkbox = document.createElement('input');
-          TL_Q.attrs(tl_checkbox, {
+          var tl_checkbox = TL_Q.create('input', {
             'type': 'checkbox',
             'class': 'tl_checkbox',
             'checked': 'checked'
           });
           tl_checkbox_container.appendChild(tl_checkbox);
-          var tl_graphic_title = document.createElement('span');
-          tl_graphic_title.setAttribute('class', 'tl_graphic_title');
+          var tl_graphic_title = TL_Q.create('span', {
+            'class': 'tl_graphic_title'
+          });
           tl_graphic_title.innerText = this.title;
           tl_graphic_button.appendChild(tl_graphic_title);
     this.tl_graphic_buttons_row.appendChild(tl_graphic_buttons_cell);
@@ -691,15 +712,13 @@ var TL_Graphic = {
     data.splice(0, 1);
     data.forEach(
       function(element, index) {
-        var tl_graphic_nameplate_y_c = document.createElement('div');
-        TL_Q.attrs(tl_graphic_nameplate_y_c, {
+        var tl_graphic_nameplate_y_c = TL_Q.create('div', {
           'class': 'tl_graphic_nameplate_y_c'
         });
         tl_graphic_nameplate_y_c.innerText = element[index_circle];
         tl_graphic_nameplate_y_c.style.color = TL_Database[num_c]['colors'][element[0]];
         tl_graphic_nameplate_y.appendChild(tl_graphic_nameplate_y_c);
-        var tl_graphic_nameplate_y_name = document.createElement('div');
-        TL_Q.attrs(tl_graphic_nameplate_y_name, {
+        var tl_graphic_nameplate_y_name = TL_Q.create('div', {
           'class': 'tl_graphic_nameplate_y_name'
         });
         tl_graphic_nameplate_y_name.innerText = TL_Database[num_c]['names'][element[0]];
@@ -741,8 +760,9 @@ var TL_Graphic = {
       element.innerHTML = '';
       // You can use a stack to store the current boxing theme
       element.classList.remove('tl_graphic_container_dark');
-      var tl_graphic_head = document.createElement('div');
-      tl_graphic_head.setAttribute('class', 'tl_graphic_head');
+      var tl_graphic_head = TL_Q.create('div', {
+        'class': 'tl_graphic_head'
+      });
       tl_graphic_head.innerHTML = '<div>' + TL_Lang[TL_Lang.current]['followers'] + '</div>';
       element.appendChild(tl_graphic_head);
     });
