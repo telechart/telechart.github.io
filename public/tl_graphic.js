@@ -174,6 +174,8 @@ var TL_Graphic = {
   graphic_height: 0,
   step_x: 0,
   step_y: 0,
+  max_parts_x: 4,
+  max_parts_y: 5,
   parts_x: 4,
   parts_y: 5,
   compress_x: 50,
@@ -356,12 +358,14 @@ var TL_Graphic = {
               scroller_opacity.style.width = scroller.style.left;
               scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
-              var m = 20 / ((minigraphic_grid.offsetWidth / scroller.offsetWidth) * 5);
+              var m = (Math.pow(_that_that.max_parts_x, 2) - _that_that.max_parts_x) / (
+                (minigraphic_grid.offsetWidth / scroller.offsetWidth) * _that_that.max_parts_x
+              );
               _that_that.drawGraphicWithScale(
                 TL_Q.getIndexByClassName(
                   TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
                   'tl_graphic_container'
-                ), (5 - m)
+                ), (_that_that.max_parts_x - m)
               );
             break;
             case 1:
@@ -522,7 +526,6 @@ var TL_Graphic = {
         'class': 'g_points'
       });
     }
-    var circles = '';
     var _that = this;
     var prev_y = 0;
     for (var i = 0; i < this.xs.length; i++) {
