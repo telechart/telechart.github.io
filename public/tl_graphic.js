@@ -205,7 +205,7 @@ var TL_Graphic = {
   types: ['line'],
   canvas: false,
   part_y_height: function() {
-    return this.compress_y + (this.parts_y - 1);
+    return this.compress_y + (this.max_parts_y - 1);
   },
   graphics_count: 0,
   cc_graphics_count: 0,
@@ -411,19 +411,64 @@ var TL_Graphic = {
               scroller_opacity.style.width = scroller.style.left;
               scroller_opacity_right.style.width = new_right + 'px';
               var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
+              var x_way = -(new_left * _that_that.max_parts_x);
               Array.from(
                 tl_graphic_container.getElementsByClassName('tl_graphic_main')[0].children
               ).forEach(function(e) {
-                var x = -(new_left * _that_that.parts_x);
                 if (e.tagName == 'polyline') {
-                  var transform = 'translate(' + x + ', ' + _that_that.graphic_height + ') scale(1, -1)';
+                  var transform = 'translate(' + x_way + ', ' + _that_that.graphic_height + ') scale(1, -1)';
                 } else {
-                  var transform = 'translate(' + x + ', 0)';
+                  var transform = 'translate(' + x_way + ', 0)';
                 }
                 TL_Q.attrs(e, {
                   'transform': transform
                 });
               });
+              if (_that_that.canvas) {
+                // TODO:: maximum Y on axes (common function)
+                var graphic_index = TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container');
+                _that_that.ys = TL_Database[graphic_index]['columns'][1].slice();
+                _that_that.ys.splice(0, 1);
+                _that_that.max_y = TL_Utils.getMaxOfArray(_that_that.ys);
+                Array.from(
+                  tl_graphic_container.getElementsByClassName('tl_graphic_points')
+                ).forEach(
+                  function(e, index) {
+                    index++;
+                    e.remove();
+                    var tl_graphic_points = TL_Q.create('canvas', {
+                      'class': 'tl_graphic_points',
+                      'width': _that_that.graphic_width,
+                      'height': _that_that.graphic_height
+                    });
+                    tl_graphic_container.getElementsByClassName('tl_graphic_grid')[0].appendChild(tl_graphic_points);
+                    var ctx = tl_graphic_points.getContext('2d');
+                    ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
+                    ctx.translate(x_way, 0);
+                    ctx.beginPath();
+                    _that_that.xs = TL_Database[graphic_index]['columns'][0].slice();
+                    _that_that.xs.splice(0, 1);
+                    _that_that.compress_x = (_that_that.graphic_width / (_that_that.xs.length - 1)) * _that_that.max_parts_x;
+                    _that_that.compress_y = 70;
+                    _that_that.ys = TL_Database[graphic_index]['columns'][index].slice();
+                    ctx.strokeStyle = TL_Database[graphic_index]['colors'][_that_that.ys[0]];
+                    ctx.lineWidth = 10;
+                    ctx.fillStyle = '#fff';
+                    _that_that.ys.splice(0, 1);
+                    _that_that.step_y = _that_that.max_y / _that_that.max_parts_y;
+                    var x = 0, y = 0;
+                    for (var i = 0; i < _that_that.xs.length; i++) {
+                      y = _that_that.ys[i] * (_that_that.part_y_height() / _that_that.step_y);
+                      ctx.moveTo(x + 5, y);
+                      ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+                      x += _that_that.compress_x;
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.fill();
+                  }
+                );
+              }
               var x = new_right * _that_that.parts_x;
               var tl_x_coordinate = tl_graphic_container.getElementsByClassName('tl_x_coordinate')[0];
               tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
@@ -545,14 +590,17 @@ var TL_Graphic = {
     var points = '';
     if (graphic_type) {
       var x_way = -((this.xs.length * this.compress_x) / this.parts_x) * (this.parts_x - 1);
-      var tl_graphic_points = TL_Q.create('canvas', {
-        'class': 'tl_graphic_points',
-        'width': this.graphic_width,
-        'height': this.graphic_height
-      });
-      if (tl_graphic_points.getContext && 0) { // 4K testing
-        this.canvas = true;
-        this.tl_graphic_grid.appendChild(tl_graphic_points);
+      if (this.canvas) {
+        var tl_graphic_points = TL_Q.create('canvas', {
+          'class': 'tl_graphic_points',
+          'width': this.graphic_width,
+          'height': this.graphic_height
+        });
+        if (tl_graphic_points.getContext) {
+          this.tl_graphic_grid.appendChild(tl_graphic_points);
+        } else {
+          this.canvas = false;
+        }
       }
       if (this.canvas) {
         var ctx = tl_graphic_points.getContext('2d');
