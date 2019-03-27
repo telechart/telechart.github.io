@@ -193,8 +193,12 @@ var TL_Graphic = {
   max_parts_y: 5,
   parts_x: 4,
   parts_y: 5,
+  part_y_height: function() {
+    return this.compress_y + (this.max_parts_y - 1);
+  },
   compress_x: 50,
   compress_y: 70,
+  fill: '#fff',
   minigraphic: true,
   minigraphic_width: 0,
   minigraphic_height: 0,
@@ -204,9 +208,8 @@ var TL_Graphic = {
   nameplate: true,
   types: ['line'],
   canvas: false,
-  part_y_height: function() {
-    return this.compress_y + (this.max_parts_y - 1);
-  },
+  canvas_brush_width: 9,
+  canvas_fill: '#fff',
   graphics_count: 0,
   cc_graphics_count: 0,
   draw: function() {
@@ -424,51 +427,10 @@ var TL_Graphic = {
                   'transform': transform
                 });
               });
-              if (_that_that.canvas) {
-                // TODO:: maximum Y on axes (common function)
-                var graphic_index = TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container');
-                _that_that.ys = TL_Database[graphic_index]['columns'][1].slice();
-                _that_that.ys.splice(0, 1);
-                _that_that.max_y = TL_Utils.getMaxOfArray(_that_that.ys);
-                Array.from(
-                  tl_graphic_container.getElementsByClassName('tl_graphic_points')
-                ).forEach(
-                  function(e, index) {
-                    index++;
-                    e.remove();
-                    var tl_graphic_points = TL_Q.create('canvas', {
-                      'class': 'tl_graphic_points',
-                      'width': _that_that.graphic_width,
-                      'height': _that_that.graphic_height
-                    });
-                    tl_graphic_container.getElementsByClassName('tl_graphic_grid')[0].appendChild(tl_graphic_points);
-                    var ctx = tl_graphic_points.getContext('2d');
-                    ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
-                    ctx.translate(x_way, 0);
-                    ctx.beginPath();
-                    _that_that.xs = TL_Database[graphic_index]['columns'][0].slice();
-                    _that_that.xs.splice(0, 1);
-                    _that_that.compress_x = (_that_that.graphic_width / (_that_that.xs.length - 1)) * _that_that.max_parts_x;
-                    _that_that.compress_y = 70;
-                    _that_that.ys = TL_Database[graphic_index]['columns'][index].slice();
-                    ctx.strokeStyle = TL_Database[graphic_index]['colors'][_that_that.ys[0]];
-                    ctx.lineWidth = 10;
-                    ctx.fillStyle = '#fff';
-                    _that_that.ys.splice(0, 1);
-                    _that_that.step_y = _that_that.max_y / _that_that.max_parts_y;
-                    var x = 0, y = 0;
-                    for (var i = 0; i < _that_that.xs.length; i++) {
-                      y = _that_that.ys[i] * (_that_that.part_y_height() / _that_that.step_y);
-                      ctx.moveTo(x + 5, y);
-                      ctx.arc(x, y, 5, 0, Math.PI * 2, true);
-                      x += _that_that.compress_x;
-                    }
-                    ctx.closePath();
-                    ctx.stroke();
-                    ctx.fill();
-                  }
-                );
-              }
+              _that_that.drawPoints(
+                tl_graphic_container,
+                x_way
+              );
               var x = new_right * _that_that.parts_x;
               var tl_x_coordinate = tl_graphic_container.getElementsByClassName('tl_x_coordinate')[0];
               tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
@@ -535,6 +497,21 @@ var TL_Graphic = {
         }
       };
     }
+  },
+  getAxesMaxY: function(id) {
+    var max_y = 0;
+    var columns = TL_Database[id]['columns'];
+    columns.slice(1, columns.length - 1).forEach(
+      function(e) {
+        var d = e.slice();
+        d.splice(0, 1);
+        var b_max_y = TL_Utils.getMaxOfArray(d);
+        if (max_y < b_max_y) {
+          max_y = b_max_y;
+        }
+      }
+    );
+    return max_y;
   },
   drawGraphic: function() {
     if (
@@ -608,8 +585,8 @@ var TL_Graphic = {
         ctx.translate(x_way, 0);
         ctx.beginPath();
         ctx.strokeStyle = this.color;
-        ctx.lineWidth = 10;
-        ctx.fillStyle = '#fff';
+        ctx.lineWidth = this.canvas_brush_width;
+        ctx.fillStyle = this.canvas_fill;
       } else {
         var g_points = TL_Q.createNS('g', {
           'class': 'g_points'
@@ -684,6 +661,54 @@ var TL_Graphic = {
       TL_Q.attrs(polyline, {
         'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)'
       });
+    }
+  },
+  drawPoints: function(
+    tl_graphic_container,
+    x_way
+  ) {
+    if (this.canvas) {
+      var graphic_index = TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container');
+      this.max_y = this.getAxesMaxY(graphic_index);
+      var _that = this;
+      Array.from(
+        tl_graphic_container.getElementsByClassName('tl_graphic_points')
+      ).forEach(
+        function(e, index) {
+          index++;
+          e.remove();
+          var tl_graphic_points = TL_Q.create('canvas', {
+            'class': 'tl_graphic_points',
+            'width': _that.graphic_width,
+            'height': _that.graphic_height
+          });
+          tl_graphic_container.getElementsByClassName('tl_graphic_grid')[0].appendChild(tl_graphic_points);
+          var ctx = tl_graphic_points.getContext('2d');
+          ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
+          ctx.translate(x_way, 0);
+          ctx.beginPath();
+          _that.xs = TL_Database[graphic_index]['columns'][0].slice();
+          _that.xs.splice(0, 1);
+          _that.compress_x = (_that.graphic_width / (_that.xs.length - 1)) * _that.max_parts_x;
+          _that.compress_y = 70;
+          _that.ys = TL_Database[graphic_index]['columns'][index].slice();
+          ctx.strokeStyle = TL_Database[graphic_index]['colors'][_that.ys[0]];
+          ctx.lineWidth = _that.canvas_brush_width;
+          ctx.fillStyle = _that.canvas_fill;
+          _that.ys.splice(0, 1);
+          _that.step_y = _that.max_y / _that.max_parts_y;
+          var x = 0, y = 0;
+          for (var i = 0; i < _that.xs.length; i++) {
+            y = _that.ys[i] * (_that.part_y_height() / _that.step_y);
+            ctx.moveTo(x + 5, y);
+            ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+            x += _that.compress_x;
+          }
+          ctx.closePath();
+          ctx.stroke();
+          ctx.fill();
+        }
+      );
     }
   },
   drawButton: function() {
