@@ -208,6 +208,7 @@ var TL_Graphic = {
   minigraphic_resize_area: 10,
   graphic_buttons: true,
   night_mode: true,
+  night_storage_name: 'tl_dc_',
   dark_theme: false,
   nameplate: true,
   types: ['line'],
@@ -247,6 +248,9 @@ var TL_Graphic = {
         }
         _that.drawGraphic();
         _that.drawMinigraphic();
+        _that.initTheme(
+          container, _that.graphics_count
+        );
       }
     );
     data.forEach(
@@ -804,7 +808,6 @@ var TL_Graphic = {
     var tl_graphic_grid = TL_Q.getParentByClassName(_that, 'tl_graphic_grid');
     var tl_graphic_container_nameplate = TL_Q.$(tl_graphic_grid, '.tl_graphic_container_nameplate')[0];
     tl_graphic_container_nameplate.classList.remove('tl_graphic_hide');
-    // nameplate data
     var num_c = TL_Q.getIndexByClassName(
       TL_Q.getParentByClassName(_that, 'tl_graphic_container'),
       'tl_graphic_container'
@@ -844,7 +847,6 @@ var TL_Graphic = {
     } else {
       tl_graphic_nameplate.style.left = '';
     }
-    // end nameplate data
   },
   hideNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
@@ -889,6 +891,18 @@ var TL_Graphic = {
     this.graphic_buttons = true; this.night_mode = true;
     this.dark_theme = false; this.nameplate = true;
   },
+  initTheme: function(_that, id) {
+    var tl_night_mode_span = TL_Q.$(_that, '.tl_night_mode span')[0];
+    if (localStorage.getItem(this.night_storage_name + id)) {
+      this.activeDarkTheme(
+        tl_night_mode_span
+      );
+    } else {
+      this.activeDayTheme(
+        tl_night_mode_span
+      );
+    }
+  },
   activeDarkTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['day_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
@@ -902,11 +916,11 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_y_line'),
       'tl_y_line_dark'
     );
-    TL_Q.replaceClassName(
+    TL_Q.addClassName(
       TL_Q.$(tl_graphic_container, '.tl_graphic_button'),
       'tl_graphic_button_dark'
     );
-    TL_Q.replaceClassName(
+    TL_Q.addClassName(
       TL_Q.$(tl_graphic_container, '.tl_graphic_title'),
       'tl_graphic_title_dark'
     );
@@ -914,7 +928,7 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.g_circle'),
       'g_circle_dark'
     );
-    TL_Q.replaceClassName(
+    TL_Q.addClassName(
       TL_Q.$(tl_graphic_container, '.tl_graphic_nameplate_line'),
       'tl_graphic_nameplate_line_dark'
     );
@@ -938,6 +952,7 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner'),
       'tl_minigraphic_scroller_spinner_dark'
     );
+    localStorage.setItem(this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container'), true);
     _that.dark_theme = true;
   },
   activeDayTheme: function(_that) {
@@ -989,6 +1004,7 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner_dark'),
       'tl_minigraphic_scroller_spinner'
     );
+    localStorage.removeItem(this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container'));
     _that.dark_theme = false;
   }
 };
