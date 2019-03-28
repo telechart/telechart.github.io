@@ -252,7 +252,7 @@ var TL_Graphic = {
   dark_theme: false,
   nameplate: true,
   types: ['line'],
-  canvas: false,
+  canvas: (location.hash == '#canvas' ? true: false),
   canvas_brush_width: 9,
   canvas_fill: '#fff',
   graphics_count: 0,
