@@ -130,8 +130,10 @@ body {
   width: 25%;
   height: 115px;
   background: #ddeaf3;
-  border-left: 10px solid #ddeaf3;
-  border-right: 10px solid #ddeaf3;
+  border-style: solid;
+  border-color: #ddeaf3;
+  border-top: none;
+  border-bottom: none;
   padding: 2px 0 2px 0;
   box-sizing: border-box;
   -moz-box-sizing: border-box;

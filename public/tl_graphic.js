@@ -202,6 +202,7 @@ var TL_Graphic = {
   minigraphic: true,
   minigraphic_width: 0,
   minigraphic_height: 0,
+  minigraphic_resize_area: 10,
   graphic_buttons: true,
   night_mode: true,
   dark_theme: false,
@@ -326,7 +327,8 @@ var TL_Graphic = {
       });
       this.tl_minigraphic_grid.appendChild(tl_minigraphic_opacity_right);
       var tl_minigraphic_scroller = TL_Q.create('div', {
-        'class': 'tl_minigraphic_scroller'
+        'class': 'tl_minigraphic_scroller',
+        'style': 'border-width:' + this.minigraphic_resize_area + 'px'
       });
       this.tl_minigraphic_grid.appendChild(tl_minigraphic_scroller);
       var tl_minigraphic_scroller_spinner = TL_Q.create('div', {
@@ -356,17 +358,16 @@ var TL_Graphic = {
         var minigraphic_grid = TL_Q.getParentByClassName(this, 'tl_minigraphic_grid');
         var scroller_coords = TL_Utils.getCoords(scroller);
         var coords_in_block = TL_Utils.getPageXY(e);
-        var resize_area = 20;
         var shift_x = coords_in_block.x - scroller_coords.left;
         var minigraphic_grid_coords = TL_Utils.getCoords(minigraphic_grid);
         var flag_event = 0;
         if (
-          coords_in_block.x < (scroller_coords.left + resize_area) &&
+          coords_in_block.x < (scroller_coords.left + _that_that.minigraphic_resize_area) &&
           coords_in_block.x > scroller_coords.left
         ) {
           flag_event = -1;
         } else if (
-          coords_in_block.x > (scroller_coords.left + scroller.offsetWidth - resize_area) &&
+          coords_in_block.x > (scroller_coords.left + scroller.offsetWidth - _that_that.minigraphic_resize_area) &&
           coords_in_block.x < (scroller_coords.left + scroller.offsetWidth)
         ) {
           flag_event = 1;
@@ -375,7 +376,7 @@ var TL_Graphic = {
         document.ontouchmove = move;
         function move(e) {
           var move_coords_in_block = TL_Utils.getPageXY(e);
-          var new_left = move_coords_in_block.x - shift_x - minigraphic_grid_coords.left;
+          var new_left = move_coords_in_block.x - shift_x;
           if (new_left < 0) {
             new_left = 0;
           }
