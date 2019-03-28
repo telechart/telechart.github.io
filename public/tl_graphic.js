@@ -248,9 +248,7 @@ var TL_Graphic = {
         }
         _that.drawGraphic();
         _that.drawMinigraphic();
-        _that.initTheme(
-          container, _that.graphics_count
-        );
+        _that.initTheme(container);
       }
     );
     data.forEach(
@@ -865,7 +863,6 @@ var TL_Graphic = {
       TL_Q.$(document, '.tl_graphic_container')
     ).forEach(function(element) {
       element.innerHTML = '';
-      // You can use a stack to store the current boxing theme
       element.classList.remove('tl_graphic_container_dark');
       var tl_graphic_head = TL_Q.create('div', {
         'class': 'tl_graphic_head'
@@ -891,8 +888,9 @@ var TL_Graphic = {
     this.graphic_buttons = true; this.night_mode = true;
     this.dark_theme = false; this.nameplate = true;
   },
-  initTheme: function(_that, id) {
+  initTheme: function(_that) {
     var tl_night_mode_span = TL_Q.$(_that, '.tl_night_mode span')[0];
+    var id = TL_Q.getIndexByClassName(_that, 'tl_graphic_container');
     if (localStorage.getItem(this.night_storage_name + id)) {
       this.activeDarkTheme(
         tl_night_mode_span
@@ -952,7 +950,10 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner'),
       'tl_minigraphic_scroller_spinner_dark'
     );
-    localStorage.setItem(this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container'), true);
+    localStorage.setItem(
+      this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container'),
+      true
+    );
     _that.dark_theme = true;
   },
   activeDayTheme: function(_that) {
@@ -1004,7 +1005,9 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner_dark'),
       'tl_minigraphic_scroller_spinner'
     );
-    localStorage.removeItem(this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container'));
+    localStorage.removeItem(
+      this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container')
+    );
     _that.dark_theme = false;
   }
 };
