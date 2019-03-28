@@ -248,7 +248,6 @@ var TL_Graphic = {
         }
         _that.drawGraphic();
         _that.drawMinigraphic();
-        _that.initTheme(container);
       }
     );
     data.forEach(
@@ -256,6 +255,7 @@ var TL_Graphic = {
         _that.drawAxis(false);
       }
     );
+    _that.initTheme(container);
     this.graphics_count++;
   },
   drawAxis: function(draw_x) {
