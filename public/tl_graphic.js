@@ -109,6 +109,9 @@ var TL_Utils = {
 
 var TL_Q = {
   svgns: 'http://www.w3.org/2000/svg',
+  $: function(e, s) {
+    return e.querySelectorAll(s);
+  },
   getIndexByClassName: function(e, c_n) {
     var i = 0;
     while ((e = e.previousSibling) != null) {
@@ -216,7 +219,7 @@ var TL_Graphic = {
   draw: function() {
     // Maybe TL_Q.getJSON('database/chart_data.json'); ?
     for (var i = 0; i < TL_Database.length; i++) {
-      var tl_graphic_container = document.getElementById('tl_graphic_container_' + i);
+      var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
       TL_Graphic.init(
         tl_graphic_container,
         TL_Database[i]
@@ -298,7 +301,7 @@ var TL_Graphic = {
     });
     TL_Q.insertAfter(
       this.tl_graphic_grid,
-      document.getElementsByClassName('tl_graphic_head')[
+      TL_Q.$(document, '.tl_graphic_head')[
         TL_Q.getIndexByClassName(this.container, 'tl_graphic_container')
       ]
     );
@@ -414,7 +417,7 @@ var TL_Graphic = {
               var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
               var x_way = -(new_left * _that_that.max_parts_x);
               Array.from(
-                tl_graphic_container.getElementsByClassName('tl_graphic_main')[0].children
+                TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0].children
               ).forEach(function(e) {
                 if (e.tagName == 'polyline') {
                   var transform = 'translate(' + x_way + ', ' + _that_that.graphic_height + ') scale(1, -1)';
@@ -430,7 +433,7 @@ var TL_Graphic = {
                 x_way
               );
               var x = new_right * _that_that.parts_x;
-              var tl_x_coordinate = tl_graphic_container.getElementsByClassName('tl_x_coordinate')[0];
+              var tl_x_coordinate = TL_Q.$(tl_graphic_container, '.tl_x_coordinate')[0];
               tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
           }
         }
@@ -554,7 +557,7 @@ var TL_Graphic = {
     this.graphic_nameplate = false;
     this.night_mode = false;
     this.init(
-      document.getElementsByClassName('tl_graphic_container')[id],
+      TL_Q.$(document, '.tl_graphic_container')[id],
       TL_Database[id]
     );
   },
@@ -670,7 +673,7 @@ var TL_Graphic = {
       this.max_y = this.getAxesMaxY(graphic_index);
       var _that = this;
       Array.from(
-        tl_graphic_container.getElementsByClassName('tl_graphic_points')
+        TL_Q.$(tl_graphic_container, '.tl_graphic_points')
       ).forEach(
         function(e, index) {
           index++;
@@ -680,7 +683,7 @@ var TL_Graphic = {
             'width': _that.graphic_width,
             'height': _that.graphic_height
           });
-          tl_graphic_container.getElementsByClassName('tl_graphic_grid')[0].appendChild(tl_graphic_points);
+          TL_Q.$(tl_graphic_container, '.tl_graphic_grid')[0].appendChild(tl_graphic_points);
           var ctx = tl_graphic_points.getContext('2d');
           ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
           ctx.translate(x_way, 0);
@@ -776,40 +779,40 @@ var TL_Graphic = {
     }
   },
   showPolyline: function(num_c, num_p) {
-    var minigraphic = document.getElementsByClassName('tl_minigraphic_main')[num_c];
-    minigraphic.getElementsByTagName('polyline')[num_p].classList.remove('tl_graphic_hide');
-    var graphic = document.getElementsByClassName('tl_graphic_main')[num_c];
-    graphic.getElementsByTagName('polyline')[num_p].classList.remove('tl_graphic_hide');
-    graphic.getElementsByClassName('g_points')[num_p].classList.remove('tl_graphic_hide');
+    var minigraphic = TL_Q.$(document, '.tl_minigraphic_main')[num_c];
+    TL_Q.$(minigraphic, 'polyline')[num_p].classList.remove('tl_graphic_hide');
+    var graphic = TL_Q.$(document, '.tl_graphic_main')[num_c];
+    TL_Q.$(graphic, 'polyline')[num_p].classList.remove('tl_graphic_hide');
+    TL_Q.$(graphic, '.g_points')[num_p].classList.remove('tl_graphic_hide');
   },
   hidePolyline: function(num_c, num_p) {
-    var minigraphic = document.getElementsByClassName('tl_minigraphic_main')[num_c];
-    minigraphic.getElementsByTagName('polyline')[num_p].classList.add('tl_graphic_hide');
-    var graphic = document.getElementsByClassName('tl_graphic_main')[num_c];
-    graphic.getElementsByTagName('polyline')[num_p].classList.add('tl_graphic_hide');
-    graphic.getElementsByClassName('g_points')[num_p].classList.add('tl_graphic_hide');
+    var minigraphic = TL_Q.$(document, '.tl_minigraphic_main')[num_c];
+    TL_Q.$(minigraphic, 'polyline')[num_p].classList.add('tl_graphic_hide');
+    var graphic = TL_Q.$(document, '.tl_graphic_main')[num_c];
+    TL_Q.$(graphic, 'polyline')[num_p].classList.add('tl_graphic_hide');
+    TL_Q.$(graphic, '.g_points')[num_p].classList.add('tl_graphic_hide');
   },
   showNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
     var tl_graphic_main = TL_Q.getParentByClassName(_that, 'tl_graphic_main');
-    var arr_g_points = tl_graphic_main.getElementsByClassName('g_points');
+    var arr_g_points = TL_Q.$(tl_graphic_main, '.g_points');
     Array.from(arr_g_points).forEach(
       function(e) {
         e.children[index_circle].classList.add('g_circle_parallel');
       }
     );
     var tl_graphic_grid = TL_Q.getParentByClassName(_that, 'tl_graphic_grid');
-    var tl_graphic_container_nameplate = tl_graphic_grid.getElementsByClassName('tl_graphic_container_nameplate')[0];
+    var tl_graphic_container_nameplate = TL_Q.$(tl_graphic_grid, '.tl_graphic_container_nameplate')[0];
     tl_graphic_container_nameplate.classList.remove('tl_graphic_hide');
     // nameplate data
     var num_c = TL_Q.getIndexByClassName(
       TL_Q.getParentByClassName(_that, 'tl_graphic_container'),
       'tl_graphic_container'
     );
-    var tl_graphic_nameplate_x = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate_x')[0];
+    var tl_graphic_nameplate_x = TL_Q.$(tl_graphic_container_nameplate, '.tl_graphic_nameplate_x')[0];
     index_circle++;
     tl_graphic_nameplate_x.innerText = TL_Utils.convertTimeWithDay(TL_Database[num_c]['columns'][0][index_circle]);
-    var tl_graphic_nameplate_y = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate_y')[0];
+    var tl_graphic_nameplate_y = TL_Q.$(tl_graphic_container_nameplate, '.tl_graphic_nameplate_y')[0];
     tl_graphic_nameplate_y.innerHTML = '';
     var data = TL_Database[num_c]['columns'].slice();
     data.splice(0, 1);
@@ -832,7 +835,7 @@ var TL_Graphic = {
     var g_circle_coords = TL_Utils.getCoords(_that);
     tl_graphic_container_nameplate.style.left = (g_circle_coords.left - shift) + 'px';
     var tl_graphic_container_nameplate_coords = TL_Utils.getCoords(tl_graphic_container_nameplate);
-    var tl_graphic_nameplate = tl_graphic_container_nameplate.getElementsByClassName('tl_graphic_nameplate')[0];
+    var tl_graphic_nameplate = TL_Q.$(tl_graphic_container_nameplate, '.tl_graphic_nameplate')[0];
     var right = tl_graphic_main.getAttribute('width') - tl_graphic_nameplate.offsetWidth - tl_graphic_container_nameplate_coords.left;
     if (right < 0) {
       tl_graphic_nameplate.style.left = (right + 35) + 'px';
@@ -845,20 +848,19 @@ var TL_Graphic = {
   },
   hideNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
-    var arr_g_points = TL_Q.getParentByClassName(_that, 'tl_graphic_main')
-    .getElementsByClassName('g_points');
+    var arr_g_points = TL_Q.$(TL_Q.getParentByClassName(_that, 'tl_graphic_main'), '.g_points');
     Array.from(arr_g_points).forEach(
       function(e) {
         e.children[index_circle].classList.remove('g_circle_parallel');
       }
     );
     var tl_graphic_grid = TL_Q.getParentByClassName(_that, 'tl_graphic_grid');
-    var tl_graphic_container_nameplate = tl_graphic_grid.getElementsByClassName('tl_graphic_container_nameplate')[0];
+    var tl_graphic_container_nameplate = TL_Q.$(tl_graphic_grid, '.tl_graphic_container_nameplate')[0];
     tl_graphic_container_nameplate.classList.add('tl_graphic_hide');
   },
   clearAll: function() {
     Array.from(
-      document.getElementsByClassName('tl_graphic_container')
+      TL_Q.$(document, '.tl_graphic_container')
     ).forEach(function(element) {
       element.innerHTML = '';
       // You can use a stack to store the current boxing theme
@@ -873,7 +875,7 @@ var TL_Graphic = {
   },
   clearGraphic: function(id) {
     TL_Q.removeNode(
-      document.getElementsByClassName('tl_graphic_grid')[id]
+      TL_Q.$(document, '.tl_graphic_grid')[id]
     );
   },
   clear: function() {
@@ -891,36 +893,102 @@ var TL_Graphic = {
     _that.innerHTML = TL_Lang[TL_Lang.current]['day_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
     tl_graphic_container.classList += ' tl_graphic_container_dark';
-    tl_graphic_container.getElementsByClassName('tl_graphic_head')[0].classList.add('tl_graphic_head_dark');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_x_line'), 'tl_x_line_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('tl_y_line'), 'tl_y_line_dark');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_button'), 'tl_graphic_button_dark');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_title'), 'tl_graphic_title_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('g_circle'), 'g_circle_dark');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_nameplate_line'), 'tl_graphic_nameplate_line_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('tl_graphic_nameplate'), 'tl_graphic_nameplate_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_opacity'), 'tl_minigraphic_opacity_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_opacity_right'), 'tl_minigraphic_opacity_right_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_scroller'), 'tl_minigraphic_scroller_dark');
-    TL_Q.addClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_scroller_spinner'), 'tl_minigraphic_scroller_spinner_dark');
+    TL_Q.$(tl_graphic_container, '.tl_graphic_head')[0].classList.add('tl_graphic_head_dark');
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_x_line'),
+      'tl_x_line_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.tl_y_line'),
+      'tl_y_line_dark'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_button'),
+      'tl_graphic_button_dark'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_title'),
+      'tl_graphic_title_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.g_circle'),
+      'g_circle_dark'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_nameplate_line'),
+      'tl_graphic_nameplate_line_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_nameplate'),
+      'tl_graphic_nameplate_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_opacity'),
+      'tl_minigraphic_opacity_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_opacity_right'),
+      'tl_minigraphic_opacity_right_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller'),
+      'tl_minigraphic_scroller_dark'
+    );
+    TL_Q.addClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner'),
+      'tl_minigraphic_scroller_spinner_dark'
+    );
     _that.dark_theme = true;
   },
   activeDayTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['night_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
     tl_graphic_container.classList.remove('tl_graphic_container_dark');
-    tl_graphic_container.getElementsByClassName('tl_graphic_head')[0].classList.remove('tl_graphic_head_dark');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_x_line_dark'), 'tl_x_line');
-    TL_Q.removeClassName(tl_graphic_container.getElementsByClassName('tl_y_line'), 'tl_y_line_dark');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_button_dark'), 'tl_graphic_button');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_title_dark'), 'tl_graphic_title');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('g_circle_dark'), 'g_circle');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_nameplate_line_dark'), 'tl_graphic_nameplate_line');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_graphic_nameplate_dark'), 'tl_graphic_nameplate');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_opacity_dark'), 'tl_minigraphic_opacity');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_opacity_right_dark'), 'tl_minigraphic_opacity_right');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_scroller_dark'), 'tl_minigraphic_scroller');
-    TL_Q.replaceClassName(tl_graphic_container.getElementsByClassName('tl_minigraphic_scroller_spinner_dark'), 'tl_minigraphic_scroller_spinner');
+    TL_Q.$(tl_graphic_container, '.tl_graphic_head')[0].classList.remove('tl_graphic_head_dark');
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_x_line_dark'),
+      'tl_x_line'
+    );
+    TL_Q.removeClassName(
+      TL_Q.$(tl_graphic_container, '.tl_y_line'),
+      'tl_y_line_dark'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_button_dark'),
+      'tl_graphic_button'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_title_dark'),
+      'tl_graphic_title'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.g_circle_dark'),
+      'g_circle'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_nameplate_line_dark'),
+      'tl_graphic_nameplate_line'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_nameplate_dark'),
+      'tl_graphic_nameplate'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_opacity_dark'),
+      'tl_minigraphic_opacity'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_opacity_right_dark'),
+      'tl_minigraphic_opacity_right'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_dark'),
+      'tl_minigraphic_scroller'
+    );
+    TL_Q.replaceClassName(
+      TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner_dark'),
+      'tl_minigraphic_scroller_spinner'
+    );
     _that.dark_theme = false;
   }
 };
@@ -947,4 +1015,7 @@ window.addEventListener("optimizedResize", function() {
   if (!TL_Utils.isPhone()) {
     location.reload();
   }
+});
+window.addEventListener("orientationchange", function() {
+  location.reload();
 });
