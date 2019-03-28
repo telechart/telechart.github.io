@@ -180,6 +180,46 @@ var TL_Q = {
 
 'use strict';
 
+var TL_StoreTheme = {
+  night_storage_name: 'tl_dc_',
+  init: function(_that) {
+    var id = TL_Q.getIndexByClassName(_that, 'tl_graphic_container');
+    if (localStorage.getItem(this.night_storage_name + id)) {
+      return true;
+    }
+    return false;
+  },
+  getColor: function(index) {
+    if (
+      localStorage.getItem(this.night_storage_name + index)
+    ) {
+      return TL_Graphic.fill_dark;
+    }
+    return TL_Graphic.fill;
+  },
+  setDark: function(
+    tl_graphic_container
+  ) {
+    localStorage.setItem(
+      this.night_storage_name + TL_Q.getIndexByClassName(
+        tl_graphic_container, 'tl_graphic_container'
+      ),
+      true
+    );
+  },
+  setDay: function(
+    tl_graphic_container
+  ) {
+    localStorage.removeItem(
+      this.night_storage_name + TL_Q.getIndexByClassName(
+        tl_graphic_container, 'tl_graphic_container'
+      )
+    );
+  }
+};
+
+'use strict';
+
 var TL_Graphic = {
   xs: [],
   ys: [],
@@ -202,13 +242,13 @@ var TL_Graphic = {
   compress_x: 50,
   compress_y: 70,
   fill: '#fff',
+  fill_dark: '#242f3e',
   minigraphic: true,
   minigraphic_width: 0,
   minigraphic_height: 0,
   minigraphic_resize_area: 10,
   graphic_buttons: true,
   night_mode: true,
-  night_storage_name: 'tl_dc_',
   dark_theme: false,
   nameplate: true,
   types: ['line'],
@@ -498,6 +538,12 @@ var TL_Graphic = {
         } else {
           _that.activeDayTheme(this);
         }
+        _that.drawGraphicWithScale(
+          TL_Q.getIndexByClassName(
+            TL_Q.getParentByClassName(this, 'tl_graphic_container'),
+            'tl_graphic_container'
+          ), _that.max_parts_x
+        );
       };
     }
   },
@@ -589,7 +635,15 @@ var TL_Graphic = {
         ctx.beginPath();
         ctx.strokeStyle = this.color;
         ctx.lineWidth = this.canvas_brush_width;
-        ctx.fillStyle = this.canvas_fill;
+        ctx.fillStyle = TL_StoreTheme.getColor(
+          TL_Q.getIndexByClassName(
+            TL_Q.getParentByClassName(
+              tl_graphic,
+              'tl_graphic_container'
+            ),
+            'tl_graphic_container'
+          )
+        );
       } else {
         var g_points = TL_Q.createNS('g', {
           'class': 'g_points'
@@ -697,7 +751,7 @@ var TL_Graphic = {
           _that.ys = TL_Database[graphic_index]['columns'][index].slice();
           ctx.strokeStyle = TL_Database[graphic_index]['colors'][_that.ys[0]];
           ctx.lineWidth = _that.canvas_brush_width;
-          ctx.fillStyle = _that.canvas_fill;
+          ctx.fillStyle = TL_StoreTheme.getColor(graphic_index);
           _that.ys.splice(0, 1);
           _that.step_y = _that.max_y / _that.max_parts_y;
           var x = 0, y = 0;
@@ -890,8 +944,7 @@ var TL_Graphic = {
   },
   initTheme: function(_that) {
     var tl_night_mode_span = TL_Q.$(_that, '.tl_night_mode span')[0];
-    var id = TL_Q.getIndexByClassName(_that, 'tl_graphic_container');
-    if (localStorage.getItem(this.night_storage_name + id)) {
+    if (TL_StoreTheme.init(_that)) {
       this.activeDarkTheme(
         tl_night_mode_span
       );
@@ -950,10 +1003,7 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner'),
       'tl_minigraphic_scroller_spinner_dark'
     );
-    localStorage.setItem(
-      this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container'),
-      true
-    );
+    TL_StoreTheme.setDark(tl_graphic_container);
     _that.dark_theme = true;
   },
   activeDayTheme: function(_that) {
@@ -1005,9 +1055,7 @@ var TL_Graphic = {
       TL_Q.$(tl_graphic_container, '.tl_minigraphic_scroller_spinner_dark'),
       'tl_minigraphic_scroller_spinner'
     );
-    localStorage.removeItem(
-      this.night_storage_name + TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container')
-    );
+    TL_StoreTheme.setDay(tl_graphic_container);
     _that.dark_theme = false;
   }
 };
