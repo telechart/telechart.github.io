@@ -386,14 +386,11 @@ var TL_Graphic = {
               scroller_opacity.style.width = scroller.style.left;
               scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
-              var m = (Math.pow(_that_that.max_parts_x, 2) - _that_that.max_parts_x) / (
-                (minigraphic_grid.offsetWidth / scroller.offsetWidth) * _that_that.max_parts_x
-              );
               _that_that.drawGraphicWithScale(
                 TL_Q.getIndexByClassName(
                   TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
                   'tl_graphic_container'
-                ), (_that_that.max_parts_x - m)
+                ), (minigraphic_grid.offsetWidth / scroller.offsetWidth)
               );
             break;
             case 1:
@@ -427,7 +424,7 @@ var TL_Graphic = {
                   'transform': transform
                 });
               });
-              _that_that.drawPoints(
+              _that_that.drawCanvasPoints(
                 tl_graphic_container,
                 x_way
               );
@@ -663,7 +660,7 @@ var TL_Graphic = {
       });
     }
   },
-  drawPoints: function(
+  drawCanvasPoints: function(
     tl_graphic_container,
     x_way
   ) {
