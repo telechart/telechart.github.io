@@ -30,27 +30,6 @@ var TL_Utils = {
     var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     return days[new Date(timestamp * 1000).getDay()] + ', ' + this.convertTime(timestamp);
   },
-  setClassStyle: function(class_name, css) {
-    var style_sheet = document.getElementsByName('tl_graphic_addon')[0];
-    if (!style_sheet) {
-      style_sheet = document.createElement('style');
-      style_sheet.setAttribute('type', 'text/css');
-      style_sheet.setAttribute('name', 'tl_graphic_addon');
-      var head = document.getElementsByTagName('head')[0];
-      if (head) {
-        head.appendChild(style_sheet);
-      }
-    }
-    if (style_sheet) {
-      var cstr = '.' + class_name + ' {' + css + '}';
-      var rules = document.createTextNode(cstr);
-      if (style_sheet.styleSheet) {
-        style_sheet.styleSheet.cssText = rules.nodeValue;
-      } else {
-        style_sheet.appendChild(rules);
-      }
-    }
-  },
   getCoords: function(e) {
     var box = e.getBoundingClientRect();
     return {
@@ -115,9 +94,21 @@ var TL_Utils = {
 
 var TL_Q = {
   svgns: 'http://www.w3.org/2000/svg',
+  /**
+    * Finding nodes in node
+    * @param {Element^} e
+    * @param {String} s
+    * @return {NodeList}
+    */
   $: function(e, s) {
     return e.querySelectorAll(s);
   },
+  /**
+    * Get index by class name
+    * @param {Element^} e
+    * @param {String} c_n
+    * @return {Number}
+    */
   getIndexByClassName: function(e, c_n) {
     var i = 0;
     while ((e = e.previousSibling) != null) {
@@ -129,6 +120,12 @@ var TL_Q = {
     }
     return i;
   },
+  /**
+    * Get parent by class name
+    * @param {Element^} e
+    * @param {String} c_n
+    * @return {Element^}
+    */
   getParentByClassName: function(e, c_n) {
     while (
       (e = e.parentNode) &&
@@ -136,27 +133,57 @@ var TL_Q = {
     );
     return e;
   },
+  /**
+    * Replace class name
+    * @param {NodeList} re
+    * @param {String} ncn
+    */
   replaceClassName: function(re, ncn) {
     Array.from(re).forEach(function(e) {
       e.classList = ncn;
     });
   },
+  /**
+    * Add class name
+    * @param {NodeList} re
+    * @param {String} ncn
+    */
   addClassName: function(re, ncn) {
     Array.from(re).forEach(function(e) {
       e.classList += ' ' + ncn;
     });
   },
+  /**
+    * Remove class name
+    * @param {NodeList} re
+    * @param {String} ncn
+    */
   removeClassName: function(re, ncn) {
     Array.from(re).forEach(function(e) {
       e.classList.remove(ncn);
     });
   },
+  /**
+    * Remove node
+    * @param {Element^} e
+    */
   removeNode: function(e) {
     e.parentNode.removeChild(e);
   },
+  /**
+    * Insert after node
+    * @param {Element^} e
+    * @param {String} re
+    */
   insertAfter: function(e, re) {
     return re.parentNode.insertBefore(e, re.nextSibling);
   },
+  /**
+    * Create node
+    * @param {String} rn
+    * @param {Object} attrs
+    * @return {Element^}
+    */
   create: function(rn, attrs) {
     var e = document.createElement(rn);
     if (attrs) {
@@ -164,6 +191,12 @@ var TL_Q = {
     }
     return e;
   },
+  /**
+    * Create NS node
+    * @param {String} rn
+    * @param {Object} attrs
+    * @return {Element^}
+    */
   createNS: function(rn, attrs) {
     var e = document.createElementNS(this.svgns, rn);
     if (attrs) {
@@ -171,11 +204,21 @@ var TL_Q = {
     }
     return e;
   },
+  /**
+    * Add attribute
+    * @param {Element^} e
+    * @param {Object} attrs
+    */
   attrs: function(e, attrs) {
     for (var key in attrs) {
       e.setAttribute(key, attrs[key]);
     }
   },
+  /**
+    * Get json
+    * @param {String} url
+    * @return {XMLHttpRequest}
+    */
   getJSON: function(url) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -187,6 +230,11 @@ var TL_Q = {
 'use strict';
 
 var TL_Canvas = {
+  /**
+    * Clear context
+    * @param {Element^} e - <canvas>
+    * @return {CanvasRenderingContext2D}
+    */
   clear(e) {
     var ctx = e.getContext('2d');
     ctx.save();
@@ -276,6 +324,9 @@ var TL_Graphic = {
   canvas_fill: '#fff',
   graphics_count: 0,
   cc_graphics_count: 0,
+  /**
+    * Drawing graphs
+    */
   draw: function() {
     // Maybe TL_Q.getJSON('database/chart_data.json'); ?
     for (var i = 0; i < TL_Database.length; i++) {
@@ -286,6 +337,11 @@ var TL_Graphic = {
       );
     }
   },
+  /**
+    * Graphs initialization
+    * @param {Element^} container - box for graphs
+    * @param {<Array<Object[...]>>} params - graphs parameters
+    */
   init: function(container, params) {
     var data = params['columns'].slice();
     this.container = container;
@@ -311,13 +367,18 @@ var TL_Graphic = {
     );
     data.forEach(
       function(element, index) {
-        _that.drawAxis(false);
+        _that.drawAxes(false);
       }
     );
     _that.initTheme(container);
     this.graphics_count++;
   },
-  drawAxis: function(draw_x) {
+  /**
+    * Drawing axes
+    * @param {Boolean} draw_x - drawing x
+    * @param {Boolean} draw_y - drawing y
+    */
+  drawAxes: function(draw_x, draw_y) {
     this.max_y = TL_Utils.getMaxOfArray(this.ys);
     this.step_y = this.max_y / this.parts_y;
     var max_b = this.max_y;
@@ -359,6 +420,9 @@ var TL_Graphic = {
     }
     this.cc_graphics_count = this.graphics_count;
   },
+  /**
+    * Drawing markup
+    */
   drawMarkup: function() {
     this.tl_graphic_grid = TL_Q.create('div', {
       'class': 'tl_graphic_grid'
@@ -369,7 +433,7 @@ var TL_Graphic = {
         TL_Q.getIndexByClassName(this.container, 'tl_graphic_container')
       ]
     );
-    this.drawAxis(true);
+    this.drawAxes(true);
     if (this.graphic) {
       this.tl_graphic_main = TL_Q.createNS('svg');
       this.tl_graphic_grid.appendChild(this.tl_graphic_main);
@@ -569,6 +633,10 @@ var TL_Graphic = {
       };
     }
   },
+  /**
+    * Get the maximum number of Y axes
+    * @param {Number} id - markup id
+    */
   getAxesMaxY: function(id) {
     var max_y = 0;
     var columns = TL_Database[id]['columns'];
@@ -584,6 +652,9 @@ var TL_Graphic = {
     );
     return max_y;
   },
+  /**
+    * Drawing graph
+    */
   drawGraphic: function() {
     if (
       this.graphic &&
@@ -602,6 +673,9 @@ var TL_Graphic = {
       }
     }
   },
+  /**
+    * Drawing mini graph
+    */
   drawMinigraphic: function() {
     if (
       this.minigraphic &&
@@ -617,6 +691,11 @@ var TL_Graphic = {
       );
     }
   },
+  /**
+    * Drawing graph with scale
+    * @param {Number} id - graph area id
+    * @param {Number} scale - graph scale
+    */
   drawGraphicWithScale: function(id, scale) {
     // TODO::infinity scroll for data charts
     this.clearGraphic(id);
@@ -631,6 +710,12 @@ var TL_Graphic = {
       TL_Database[id]
     );
   },
+  /**
+    * Drawing polyline
+    * @param {Element^} tl_graphic - box for graph
+    * @param {Number} graphic_height - height of graph
+    * @param {Number} graphic_type - type of graph
+    */
   drawPolyline: function(tl_graphic, graphic_height, graphic_type) {
     var max_y_len = TL_Utils.getLengthOfNumber(this.max_y);
     var polyline = TL_Q.createNS('polyline');
@@ -745,9 +830,15 @@ var TL_Graphic = {
       });
     }
   },
+  /**
+    * Drawing points in the raster
+    * @param {Element^} tl_graphic_container - box for graph
+    * @param {Number} x_way - x offset
+    * @param {Array<Number>} ex - graphs exclusion
+    */
   drawCanvasPoints: function(
     tl_graphic_container,
-    x_way
+    x_way, ex
   ) {
     if (this.canvas) {
       var graphic_index = TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container');
@@ -757,6 +848,9 @@ var TL_Graphic = {
         TL_Q.$(tl_graphic_container, '.tl_graphic_points')
       ).forEach(
         function(e, index) {
+          if (index.indexOf(ex) == -1) {
+            return;
+          }
           index++;
           var ctx = TL_Canvas.clear(e);
           ctx.setTransform(1, 0, 0, -1, 0, e.height);
@@ -786,6 +880,9 @@ var TL_Graphic = {
       );
     }
   },
+  /**
+    * Drawing button
+    */
   drawButton: function() {
     var tl_graphic_buttons_cell = TL_Q.create('div', {
       'class': 'tl_graphic_buttons_cell'
@@ -857,6 +954,11 @@ var TL_Graphic = {
       }
     }
   },
+  /**
+    * Showing polyline
+    * @param {Number} num_c - number of graph
+    * @param {Number} num_p - number of polyline
+    */
   showPolyline: function(num_c, num_p) {
     var minigraphic = TL_Q.$(document, '.tl_minigraphic_main')[num_c];
     TL_Q.removeClassName(
@@ -873,6 +975,11 @@ var TL_Graphic = {
       'tl_graphic_hide'
     );
   },
+  /**
+    * Hiding polyline
+    * @param {Number} num_c - number of graph
+    * @param {Number} num_p - number of polyline
+    */
   hidePolyline: function(num_c, num_p) {
     var minigraphic = TL_Q.$(document, '.tl_minigraphic_main')[num_c];
     TL_Q.addClassName(
@@ -889,6 +996,10 @@ var TL_Graphic = {
       'tl_graphic_hide'
     );
   },
+  /**
+    * Show nameplate
+    * @param {Element^} _that - circle
+    */
   showNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
     var tl_graphic_main = TL_Q.getParentByClassName(_that, 'tl_graphic_main');
@@ -947,6 +1058,10 @@ var TL_Graphic = {
       tl_graphic_nameplate.style.left = '';
     }
   },
+  /**
+    * Hide nameplate
+    * @param {Element^} _that - circle
+    */
   hideNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
     var arr_g_points = TL_Q.$(TL_Q.getParentByClassName(_that, 'tl_graphic_main'), '.g_points');
@@ -965,7 +1080,10 @@ var TL_Graphic = {
       'tl_graphic_hide'
     );
   },
-  clearAll: function() {
+  /**
+    * Clear markup
+    */
+  clearMarkup: function() {
     Array.from(
       TL_Q.$(document, '.tl_graphic_container')
     ).forEach(function(element) {
@@ -982,22 +1100,33 @@ var TL_Graphic = {
     });
     this.clear();
   },
+  /**
+    * Clear graphs grid
+    * @param {Number} id - grid id
+    */
   clearGraphic: function(id) {
     TL_Q.removeNode(
       TL_Q.$(document, '.tl_graphic_grid')[id]
     );
   },
+  /**
+    * Clear this
+    */
   clear: function() {
     this.xs = []; this.ys = [];
     this.max_y = 0; this.color = 'transparent';
     this.title = ''; this.brush_width = 3; this.graphic = true;
     this.graphic_width = 0; this.graphic_height = 0;
-    this.step_x = 0; this.step_y = 0; this.parts_x = 5; this.parts_y = 5;
+    this.step_x = 0; this.step_y = 0; this.parts_x = 4; this.parts_y = 5;
     this.compress_x = 50; this.compress_y = 70; this.minigraphic = true;
     this.minigraphic_width = 0; this.minigraphic_height = 0;
     this.graphic_buttons = true; this.night_mode = true;
     this.dark_theme = false; this.nameplate = true;
   },
+  /**
+    * Theme initialization
+    * @param {Element^} _that - box for graph
+    */
   initTheme: function(_that) {
     var tl_night_mode_span = TL_Q.$(_that, '.tl_night_mode span')[0];
     if (TL_StoreTheme.init(_that)) {
@@ -1010,6 +1139,10 @@ var TL_Graphic = {
       );
     }
   },
+  /**
+    * Dark theme activation
+    * @param {Element^} _that - box for graph
+    */
   activeDarkTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['day_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
@@ -1068,6 +1201,10 @@ var TL_Graphic = {
     TL_StoreTheme.setDark(tl_graphic_container);
     _that.dark_theme = true;
   },
+  /**
+    * Day theme activation
+    * @param {Element^} _that - box for graph
+    */
   activeDayTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['night_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
