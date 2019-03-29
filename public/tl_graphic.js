@@ -107,6 +107,12 @@ var TL_Utils = {
 
 // Maybe jQuery?
 
+// Maybe architecture?
+// $, $ic, $_$c, $rc, $ac,
+// $dc, $rn, $ia, $_c, $_cns, $a, $gj
+// This will significantly reduce the output js size,
+// but the code will be less readable.
+
 var TL_Q = {
   svgns: 'http://www.w3.org/2000/svg',
   $: function(e, s) {
@@ -321,7 +327,10 @@ var TL_Graphic = {
       'class': 'tl_graphic_coordinates'
     });
     if (cc_graphic_coordinates && this.cc_graphics_count == this.graphics_count) {
-      this.tl_graphic_coordinates.classList.add('tl_graphic_coordinates_next');
+      TL_Q.addClassName(
+        [this.tl_graphic_coordinates],
+        'tl_graphic_coordinates_next'
+      );
       this.tl_graphic_grid.insertBefore(this.tl_graphic_coordinates, cc_graphic_coordinates);
     } else {
       this.tl_graphic_grid.appendChild(this.tl_graphic_coordinates);
@@ -702,7 +711,10 @@ var TL_Graphic = {
           if ((x - prev_y) > 80 || x == 0) {
             prev_y = x;
           } else {
-            tl_y_line.classList.add('tl_graphic_hide');
+            TL_Q.addClassName(
+              [tl_y_line],
+              'tl_graphic_hide'
+            );
           }
         }
       }
@@ -811,11 +823,16 @@ var TL_Graphic = {
     this.tl_graphic_buttons_row.appendChild(tl_graphic_buttons_cell);
     var _that = this;
     tl_checkbox_container.onclick = function() {
-      this.classList.remove('tl_checkbox_container--animation');
-      // Maybe void?
+      TL_Q.removeClassName(
+        [this],
+        'tl_checkbox_container--animation'
+      );
       var _that_that = this;
       setTimeout(function() {
-        _that_that.classList.add('tl_checkbox_container--animation');
+        TL_Q.addClassName(
+          [_that_that],
+          'tl_checkbox_container--animation'
+        );
       });
       var num_c = TL_Q.getIndexByClassName(
         TL_Q.getParentByClassName(this, 'tl_graphic_container'),
@@ -842,17 +859,35 @@ var TL_Graphic = {
   },
   showPolyline: function(num_c, num_p) {
     var minigraphic = TL_Q.$(document, '.tl_minigraphic_main')[num_c];
-    TL_Q.$(minigraphic, 'polyline')[num_p].classList.remove('tl_graphic_hide');
+    TL_Q.removeClassName(
+      [TL_Q.$(minigraphic, 'polyline')[num_p]],
+      'tl_graphic_hide'
+    );
     var graphic = TL_Q.$(document, '.tl_graphic_main')[num_c];
-    TL_Q.$(graphic, 'polyline')[num_p].classList.remove('tl_graphic_hide');
-    TL_Q.$(graphic, '.g_points')[num_p].classList.remove('tl_graphic_hide');
+    TL_Q.removeClassName(
+      [TL_Q.$(graphic, 'polyline')[num_p]],
+      'tl_graphic_hide'
+    );
+    TL_Q.removeClassName(
+      [TL_Q.$(graphic, '.g_points')[num_p]],
+      'tl_graphic_hide'
+    );
   },
   hidePolyline: function(num_c, num_p) {
     var minigraphic = TL_Q.$(document, '.tl_minigraphic_main')[num_c];
-    TL_Q.$(minigraphic, 'polyline')[num_p].classList.add('tl_graphic_hide');
+    TL_Q.addClassName(
+      [TL_Q.$(minigraphic, 'polyline')[num_p]],
+      'tl_graphic_hide'
+    );
     var graphic = TL_Q.$(document, '.tl_graphic_main')[num_c];
-    TL_Q.$(graphic, 'polyline')[num_p].classList.add('tl_graphic_hide');
-    TL_Q.$(graphic, '.g_points')[num_p].classList.add('tl_graphic_hide');
+    TL_Q.addClassName(
+      [TL_Q.$(graphic, 'polyline')[num_p]],
+      'tl_graphic_hide'
+    );
+    TL_Q.addClassName(
+      [TL_Q.$(graphic, '.g_points')[num_p]],
+      'tl_graphic_hide'
+    );
   },
   showNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
@@ -860,12 +895,18 @@ var TL_Graphic = {
     var arr_g_points = TL_Q.$(tl_graphic_main, '.g_points');
     Array.from(arr_g_points).forEach(
       function(e) {
-        e.children[index_circle].classList.add('g_circle_parallel');
+        TL_Q.addClassName(
+          [e.children[index_circle]],
+          'g_circle_parallel'
+        );
       }
     );
     var tl_graphic_grid = TL_Q.getParentByClassName(_that, 'tl_graphic_grid');
     var tl_graphic_container_nameplate = TL_Q.$(tl_graphic_grid, '.tl_graphic_container_nameplate')[0];
-    tl_graphic_container_nameplate.classList.remove('tl_graphic_hide');
+    TL_Q.removeClassName(
+      [tl_graphic_container_nameplate],
+      'tl_graphic_hide'
+    );
     var num_c = TL_Q.getIndexByClassName(
       TL_Q.getParentByClassName(_that, 'tl_graphic_container'),
       'tl_graphic_container'
@@ -911,19 +952,28 @@ var TL_Graphic = {
     var arr_g_points = TL_Q.$(TL_Q.getParentByClassName(_that, 'tl_graphic_main'), '.g_points');
     Array.from(arr_g_points).forEach(
       function(e) {
-        e.children[index_circle].classList.remove('g_circle_parallel');
+        TL_Q.removeClassName(
+          [e.children[index_circle]],
+          'g_circle_parallel'
+        );
       }
     );
     var tl_graphic_grid = TL_Q.getParentByClassName(_that, 'tl_graphic_grid');
     var tl_graphic_container_nameplate = TL_Q.$(tl_graphic_grid, '.tl_graphic_container_nameplate')[0];
-    tl_graphic_container_nameplate.classList.add('tl_graphic_hide');
+    TL_Q.addClassName(
+      [tl_graphic_container_nameplate],
+      'tl_graphic_hide'
+    );
   },
   clearAll: function() {
     Array.from(
       TL_Q.$(document, '.tl_graphic_container')
     ).forEach(function(element) {
       element.innerHTML = '';
-      element.classList.remove('tl_graphic_container_dark');
+      TL_Q.removeClassName(
+        [element],
+        'tl_graphic_container_dark'
+      );
       var tl_graphic_head = TL_Q.create('div', {
         'class': 'tl_graphic_head'
       });
