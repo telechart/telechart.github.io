@@ -180,6 +180,19 @@ var TL_Q = {
 
 'use strict';
 
+var TL_Canvas = {
+  clear(e) {
+    var ctx = e.getContext('2d');
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, e.width, e.height);
+    ctx.restore();
+    return ctx;
+  }
+};
+
+'use strict';
+
 var TL_StoreTheme = {
   night_storage_name: 'tl_dc_',
   init: function(_that) {
@@ -733,15 +746,8 @@ var TL_Graphic = {
       ).forEach(
         function(e, index) {
           index++;
-          e.remove();
-          var tl_graphic_points = TL_Q.create('canvas', {
-            'class': 'tl_graphic_points',
-            'width': _that.graphic_width,
-            'height': _that.graphic_height
-          });
-          TL_Q.$(tl_graphic_container, '.tl_graphic_grid')[0].appendChild(tl_graphic_points);
-          var ctx = tl_graphic_points.getContext('2d');
-          ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
+          var ctx = TL_Canvas.clear(e);
+          ctx.setTransform(1, 0, 0, -1, 0, e.height);
           ctx.translate(x_way, 0);
           ctx.beginPath();
           _that.xs = TL_Database[graphic_index]['columns'][0].slice();
