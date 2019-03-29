@@ -963,8 +963,14 @@ var TL_Graphic = {
   activeDarkTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['day_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-    tl_graphic_container.classList += ' tl_graphic_container_dark';
-    TL_Q.$(tl_graphic_container, '.tl_graphic_head')[0].classList.add('tl_graphic_head_dark');
+    TL_Q.addClassName(
+      [tl_graphic_container],
+      'tl_graphic_container_dark'
+    );
+    TL_Q.addClassName(
+      [TL_Q.$(tl_graphic_container, '.tl_graphic_head')[0]],
+      'tl_graphic_head_dark'
+    );
     TL_Q.replaceClassName(
       TL_Q.$(tl_graphic_container, '.tl_x_line'),
       'tl_x_line_dark'
@@ -1015,8 +1021,14 @@ var TL_Graphic = {
   activeDayTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['night_mode'];
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-    tl_graphic_container.classList.remove('tl_graphic_container_dark');
-    TL_Q.$(tl_graphic_container, '.tl_graphic_head')[0].classList.remove('tl_graphic_head_dark');
+    TL_Q.removeClassName(
+      [tl_graphic_container],
+      'tl_graphic_container_dark'
+    );
+    TL_Q.removeClassName(
+      [TL_Q.$(tl_graphic_container, '.tl_graphic_head')[0]],
+      'tl_graphic_head_dark'
+    );
     TL_Q.replaceClassName(
       TL_Q.$(tl_graphic_container, '.tl_x_line_dark'),
       'tl_x_line'
