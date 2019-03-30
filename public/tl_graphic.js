@@ -848,8 +848,10 @@ var TL_Graphic = {
         TL_Q.$(tl_graphic_container, '.tl_graphic_points')
       ).forEach(
         function(e, index) {
-          if (index.indexOf(ex) == -1) {
-            return;
+          if (ex) {
+            if (ex.find(index)) {
+              return;
+            }
           }
           index++;
           var ctx = TL_Canvas.clear(e);
