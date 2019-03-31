@@ -569,6 +569,7 @@ var TL_Graphic = {
         }
         document.onmouseup = up;
         document.ontouchend = up;
+        document.ontouchcancel = up;
         function up() {
           document.onmousemove = document.onmouseup = null;
           document.ontouchmove = document.ontouchup = null;
@@ -785,6 +786,9 @@ var TL_Graphic = {
           });
           circle.addEventListener('touchstart', function() {
             _that.showNameplate(this);
+          });
+          circle.addEventListener('touchcancel', function() {
+            _that.hideNameplate(this);
           });
           g_points.appendChild(circle);
         }
