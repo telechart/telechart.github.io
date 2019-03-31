@@ -518,6 +518,7 @@ var TL_Graphic = {
           if (new_left < 0) {
             new_left = 0;
           }
+          var new_right = minigraphic_grid.offsetWidth - move_coords_in_block.x;
           switch (flag_event) {
             case -1:
               scroller.style.left = new_left + 'px';
@@ -536,11 +537,19 @@ var TL_Graphic = {
               );
             break;
             case 1:
-              // TODO::anything
-              var new_right = minigraphic_grid.offsetWidth - move_coords_in_block.x;
+              // Feature (test)
               scroller_opacity_right.style.width = new_right + 'px';
               scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
+              _that_that.drawGraphicWithScale(
+                index_tl_graphic_container,
+                (minigraphic_grid.offsetWidth / scroller.offsetWidth)
+              );
+              _that_that.scrollGraphic(
+                _that, minigraphic_grid, new_left, new_right,
+                scroller, scroller_opacity, scroller_opacity_right,
+                scroller_transparent, index_tl_graphic_container
+              );
             break;
             default:
               _that_that.scrollGraphic(
