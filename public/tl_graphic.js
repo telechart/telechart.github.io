@@ -529,6 +529,11 @@ var TL_Graphic = {
                 index_tl_graphic_container,
                 (minigraphic_grid.offsetWidth / scroller.offsetWidth)
               );
+              _that_that.scrollGraphic(
+                _that, minigraphic_grid, new_left, new_right,
+                scroller, scroller_opacity, scroller_opacity_right,
+                scroller_transparent, index_tl_graphic_container
+              );
             break;
             case 1:
               // TODO::anything
@@ -538,36 +543,11 @@ var TL_Graphic = {
               scroller_transparent.style.width = scroller.style.width;
             break;
             default:
-              var right_dge = minigraphic_grid.offsetWidth - scroller.offsetWidth;
-              if (new_left > right_dge) {
-                new_left = right_dge;
-              }
-              var new_right = minigraphic_grid.offsetWidth - (new_left + scroller.offsetWidth);
-              scroller.style.left = new_left + 'px';
-              scroller_transparent.style.left = scroller.style.left;
-              scroller_opacity.style.width = scroller.style.left;
-              scroller_opacity_right.style.width = new_right + 'px';
-              var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-              var x_way = -(new_left * _that_that.parts_x[index_tl_graphic_container]);
-              Array.from(
-                TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0].children
-              ).forEach(function(e) {
-                if (e.tagName == 'polyline') {
-                  var transform = 'translate(' + x_way + ', ' + _that_that.graphic_height + ') scale(1, -1)';
-                } else {
-                  var transform = 'translate(' + x_way + ', 0)';
-                }
-                TL_Q.attrs(e, {
-                  'transform': transform
-                });
-              });
-              _that_that.drawCanvasPoints(
-                tl_graphic_container,
-                x_way
+              _that_that.scrollGraphic(
+                _that, minigraphic_grid, new_left, new_right,
+                scroller, scroller_opacity, scroller_opacity_right,
+                scroller_transparent, index_tl_graphic_container
               );
-              var x = new_right * _that_that.parts_x[index_tl_graphic_container];
-              var tl_x_coordinate = TL_Q.$(tl_graphic_container, '.tl_x_coordinate')[0];
-              tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
           }
         }
         document.onmouseup = up;
@@ -638,6 +618,46 @@ var TL_Graphic = {
         );
       };
     }
+  },
+  /**
+    * Scroll graphic
+    **/
+  scrollGraphic: function(
+    _that, minigraphic_grid, new_left, new_right,
+    scroller, scroller_opacity, scroller_opacity_right,
+    scroller_transparent, index_tl_graphic_container
+  ) {
+    var right_dge = minigraphic_grid.offsetWidth - scroller.offsetWidth;
+    if (new_left > right_dge) {
+      new_left = right_dge;
+    }
+    var new_right = minigraphic_grid.offsetWidth - (new_left + scroller.offsetWidth);
+    scroller.style.left = new_left + 'px';
+    scroller_transparent.style.left = scroller.style.left;
+    scroller_opacity.style.width = scroller.style.left;
+    scroller_opacity_right.style.width = new_right + 'px';
+    var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
+    var x_way = -(new_left * this.parts_x[index_tl_graphic_container]);
+    var _that_that = this;
+    Array.from(
+      TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0].children
+    ).forEach(function(e) {
+      if (e.tagName == 'polyline') {
+        var transform = 'translate(' + x_way + ', ' + _that_that.graphic_height + ') scale(1, -1)';
+      } else {
+        var transform = 'translate(' + x_way + ', 0)';
+      }
+      TL_Q.attrs(e, {
+        'transform': transform
+      });
+    });
+    this.drawCanvasPoints(
+      tl_graphic_container,
+      x_way
+    );
+    var x = new_right * this.parts_x[index_tl_graphic_container];
+    var tl_x_coordinate = TL_Q.$(tl_graphic_container, '.tl_x_coordinate')[0];
+    tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
   },
   /**
     * Get the maximum number of Y axes
