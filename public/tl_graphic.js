@@ -333,7 +333,7 @@ var TL_Graphic = {
     // Maybe TL_Q.getJSON('database/chart_data.json'); ?
     for (var i = 0; i < TL_Database.length; i++) {
       var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
-      TL_Graphic.init(
+      this.init(
         tl_graphic_container,
         TL_Database[i]
       );

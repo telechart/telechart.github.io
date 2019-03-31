@@ -255,10 +255,11 @@ body {
   position: absolute;
   top: -90px;
   bottom: 0;
-  height: 89%;
+  height: 484px;
 }
 .tl_graphic_container_nameplate .tl_graphic_nameplate {
   position: relative;
+  z-index: 2;
   padding: 15px;
   border-radius: 5px;
   background: #fff;
@@ -280,7 +281,12 @@ body {
   padding-right: 15px;
 }
 .tl_graphic_container_nameplate .tl_graphic_nameplate_line {
-  margin: 0 auto;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 2px;
   height: 100%;
   background: #e3e3e3;
@@ -333,15 +339,9 @@ body {
   fill: #242f3e;
 }
 .tl_graphic_container_nameplate .tl_graphic_nameplate_line_dark {
-  margin: 0 auto;
-  width: 2px;
-  height: 100%;
   background: #3b4a5a;
 }
 .tl_graphic_container_nameplate .tl_graphic_nameplate_dark {
-  position: relative;
-  padding: 17px;
-  border-radius: 5px;
   background: #253241;
   border: 2px solid #202a37;
 }
