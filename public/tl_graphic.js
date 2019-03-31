@@ -150,7 +150,9 @@ var TL_Q = {
     */
   addClassName: function(re, ncn) {
     Array.from(re).forEach(function(e) {
-      e.classList += ' ' + ncn;
+      if (!e.classList.contains(ncn)) {
+        e.classList += ' ' + ncn;
+      }
     });
   },
   /**
