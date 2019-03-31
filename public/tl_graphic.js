@@ -866,7 +866,7 @@ var TL_Graphic = {
           ctx.beginPath();
           _that.xs = TL_Database[graphic_index]['columns'][0].slice();
           _that.xs.splice(0, 1);
-          _that.compress_x = (_that.graphic_width / (_that.xs.length - 1)) * _that.max_parts_x;
+          _that.compress_x = (_that.graphic_width / (_that.xs.length - 1)) * _that.parts_x;
           _that.compress_y = 70;
           _that.ys = TL_Database[graphic_index]['columns'][index].slice();
           ctx.strokeStyle = TL_Database[graphic_index]['colors'][_that.ys[0]];
