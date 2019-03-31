@@ -545,7 +545,7 @@ var TL_Graphic = {
               scroller_opacity.style.width = scroller.style.left;
               scroller_opacity_right.style.width = new_right + 'px';
               var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-              var x_way = -(new_left * _that_that.max_parts_x);
+              var x_way = -(new_left * _that_that.parts_x);
               Array.from(
                 TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0].children
               ).forEach(function(e) {
