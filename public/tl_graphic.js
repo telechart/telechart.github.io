@@ -303,7 +303,7 @@ var TL_Graphic = {
   step_y: 0,
   max_parts_x: 4,
   max_parts_y: 5,
-  parts_x: 4,
+  parts_x: [],
   parts_y: 5,
   part_y_height: function() {
     return this.compress_y + (this.max_parts_y - 1);
@@ -332,6 +332,7 @@ var TL_Graphic = {
   draw: function() {
     // Maybe TL_Q.getJSON('database/chart_data.json'); ?
     for (var i = 0; i < TL_Database.length; i++) {
+      this.parts_x.push(this.max_parts_x);
       var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
       this.init(
         tl_graphic_container,
@@ -509,6 +510,10 @@ var TL_Graphic = {
         document.ontouchmove = move;
         function move(e) {
           var move_coords_in_block = TL_Utils.getPageXY(e);
+          var index_tl_graphic_container = TL_Q.getIndexByClassName(
+            TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
+            'tl_graphic_container'
+          );
           var new_left = move_coords_in_block.x - shift_x;
           if (new_left < 0) {
             new_left = 0;
@@ -521,10 +526,8 @@ var TL_Graphic = {
               scroller.style.width = (minigraphic_grid.offsetWidth - scroller_opacity.offsetWidth - scroller_opacity_right.offsetWidth) + 'px';
               scroller_transparent.style.width = scroller.style.width;
               _that_that.drawGraphicWithScale(
-                TL_Q.getIndexByClassName(
-                  TL_Q.getParentByClassName(minigraphic_grid, 'tl_graphic_container'),
-                  'tl_graphic_container'
-                ), (minigraphic_grid.offsetWidth / scroller.offsetWidth)
+                index_tl_graphic_container,
+                (minigraphic_grid.offsetWidth / scroller.offsetWidth)
               );
             break;
             case 1:
@@ -545,7 +548,7 @@ var TL_Graphic = {
               scroller_opacity.style.width = scroller.style.left;
               scroller_opacity_right.style.width = new_right + 'px';
               var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-              var x_way = -(new_left * _that_that.parts_x);
+              var x_way = -(new_left * _that_that.parts_x[index_tl_graphic_container]);
               Array.from(
                 TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0].children
               ).forEach(function(e) {
@@ -562,7 +565,7 @@ var TL_Graphic = {
                 tl_graphic_container,
                 x_way
               );
-              var x = new_right * _that_that.parts_x;
+              var x = new_right * _that_that.parts_x[index_tl_graphic_container];
               var tl_x_coordinate = TL_Q.$(tl_graphic_container, '.tl_x_coordinate')[0];
               tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
           }
@@ -663,8 +666,12 @@ var TL_Graphic = {
       this.graphic &&
       this.type.indexOf(this.types) != -1
     ) {
+      var index_tl_graphic_container = TL_Q.getIndexByClassName(
+        this.container,
+        'tl_graphic_container'
+      );
       this.brush_width = 3;
-      this.compress_x = (this.graphic_width / (this.xs.length - 1)) * this.parts_x;
+      this.compress_x = (this.graphic_width / (this.xs.length - 1)) * this.parts_x[index_tl_graphic_container];
       this.compress_y = 70;
       this.drawPolyline(
         this.tl_graphic_main,
@@ -702,7 +709,7 @@ var TL_Graphic = {
   drawGraphicWithScale: function(id, scale) {
     // TODO::infinity scroll for data charts
     this.clearGraphic(id);
-    this.parts_x = scale;
+    this.parts_x[id] = scale;
     this.brush_width = 3;
     this.minigraphic = false;
     this.graphic_buttons = false;
@@ -725,7 +732,11 @@ var TL_Graphic = {
     var x = 0, y = 0;
     var points = '';
     if (graphic_type) {
-      var x_way = -((this.xs.length * this.compress_x) / this.parts_x) * (this.parts_x - 1);
+      var index_tl_graphic_container = TL_Q.getIndexByClassName(
+        this.container,
+        'tl_graphic_container'
+      );
+      var x_way = -((this.xs.length * this.compress_x) / this.parts_x[index_tl_graphic_container]) * (this.parts_x[index_tl_graphic_container] - 1);
       if (this.canvas) {
         var tl_graphic_points = TL_Q.create('canvas', {
           'class': 'tl_graphic_points',
@@ -866,7 +877,7 @@ var TL_Graphic = {
           ctx.beginPath();
           _that.xs = TL_Database[graphic_index]['columns'][0].slice();
           _that.xs.splice(0, 1);
-          _that.compress_x = (_that.graphic_width / (_that.xs.length - 1)) * _that.parts_x;
+          _that.compress_x = (_that.graphic_width / (_that.xs.length - 1)) * _that.parts_x[graphic_index];
           _that.compress_y = 70;
           _that.ys = TL_Database[graphic_index]['columns'][index].slice();
           ctx.strokeStyle = TL_Database[graphic_index]['colors'][_that.ys[0]];
@@ -1125,7 +1136,7 @@ var TL_Graphic = {
     this.max_y = 0; this.color = 'transparent';
     this.title = ''; this.brush_width = 3; this.graphic = true;
     this.graphic_width = 0; this.graphic_height = 0;
-    this.step_x = 0; this.step_y = 0; this.parts_x = 4; this.parts_y = 5;
+    this.step_x = 0; this.step_y = 0; this.parts_x = []; this.parts_y = 5;
     this.compress_x = 50; this.compress_y = 70; this.minigraphic = true;
     this.minigraphic_width = 0; this.minigraphic_height = 0;
     this.graphic_buttons = true; this.night_mode = true;
