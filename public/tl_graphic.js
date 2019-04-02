@@ -369,6 +369,9 @@ var TL_Graphic = {
     */
   init: function(container, params) {
     var data = params['columns'].slice();
+    var num_c = TL_Q.getIndexByClassName(
+      container, 'tl_graphic_container'
+    );
     this.container = container;
     this.xs = data[0].slice();
     this.xs.splice(0, 1);
@@ -388,6 +391,12 @@ var TL_Graphic = {
         }
         _that.drawGraphic();
         _that.drawMinigraphic();
+        if (TL_StoreDisplay.getState(num_c, index)) {
+          _that.hidePolyline(num_c, index);
+        }
+        if (_that.graphic_buttons) {
+          _that.drawButton();
+        }
       }
     );
     data.forEach(
@@ -749,9 +758,6 @@ var TL_Graphic = {
         false
       );
     }
-    if (this.graphic_buttons) {
-      this.drawButton();
-    }
   },
   /**
     * Drawing graph with scale
@@ -907,7 +913,7 @@ var TL_Graphic = {
     */
   drawCanvasPoints: function(
     tl_graphic_container,
-    x_way, ex
+    x_way
   ) {
     if (this.canvas) {
       var graphic_index = TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container');
@@ -917,13 +923,11 @@ var TL_Graphic = {
         TL_Q.$(tl_graphic_container, '.tl_graphic_points')
       ).forEach(
         function(e, index) {
-          if (ex) {
-            if (ex.find(index)) {
-              return;
-            }
+          var ctx = TL_Canvas.clear(e);
+          if (TL_StoreDisplay.getState(graphic_index, index)) {
+            return;
           }
           index++;
-          var ctx = TL_Canvas.clear(e);
           ctx.setTransform(1, 0, 0, -1, 0, e.height);
           ctx.translate(x_way, 0);
           ctx.beginPath();
@@ -1012,7 +1016,7 @@ var TL_Graphic = {
         'tl_checkbox_container--animation'
       );
     });
-    var tl_checkbox = _that.getElementsByClassName('tl_checkbox')[0];
+    var tl_checkbox = TL_Q.$(_that, '.tl_checkbox')[0];
     if (_that.style.backgroundColor == _that.style.borderColor) {
       _that.style.backgroundColor = 'transparent';
       tl_checkbox.checked = false;
