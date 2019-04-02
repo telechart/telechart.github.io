@@ -1091,10 +1091,14 @@ var TL_Graphic = {
       [TL_Q.$(graphic, 'polyline')[num_p]],
       'tl_graphic_hide'
     );
-    TL_Q.addClassName(
-      [TL_Q.$(graphic, '.g_points')[num_p]],
-      'tl_graphic_hide'
-    );
+    if (this.canvas) {
+      // TODO:: Canvas-points reload
+    } else {
+      TL_Q.addClassName(
+        [TL_Q.$(graphic, '.g_points')[num_p]],
+        'tl_graphic_hide'
+      );
+    }
     TL_StoreDisplay.setInvisible(num_c, num_p);
   },
   /**
