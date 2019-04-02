@@ -365,7 +365,7 @@ var TL_Graphic = {
   },
   /**
     * Graphs initialization
-    * @param {Element^} container - box for graphs
+    * @param {Element^} container - tl_graphic_container
     * @param {<Array<Object[...]>>} params - graphs parameters
     */
   init: function(container, params) {
@@ -693,10 +693,7 @@ var TL_Graphic = {
         'transform': transform
       });
     });
-    this.drawCanvasPoints(
-      tl_graphic_container,
-      this.x_way[index_tl_graphic_container]
-    );
+    this.drawCanvasPoints(tl_graphic_container);
     var x = new_right * this.parts_x[index_tl_graphic_container];
     var tl_x_coordinate = TL_Q.$(tl_graphic_container, '.tl_x_coordinate')[0];
     tl_x_coordinate.style.transform = 'translate(' + x + 'px)';
@@ -781,7 +778,7 @@ var TL_Graphic = {
   },
   /**
     * Drawing polyline
-    * @param {Element^} tl_graphic - box for graph
+    * @param {Element^} tl_graphic - tl_graphic_main | tl_minigraphic_main
     * @param {Number} graphic_height - height of graph
     * @param {Number} graphic_type - type of graph
     */
@@ -838,8 +835,9 @@ var TL_Graphic = {
       if (graphic_type) {
         if (this.canvas) {
           // Speed 4K [canvas points + vector svg]
-          ctx.moveTo(x + 5, y);
-          ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+          var bias = this.canvas_brush_width / 2;
+          ctx.moveTo(x + bias, y);
+          ctx.arc(x, y, bias, 0, Math.PI * 2, true);
         } else {
           // Brakes...;()
           var circle = TL_Q.createNS('circle', {
@@ -909,12 +907,8 @@ var TL_Graphic = {
   /**
     * Drawing points in the raster
     * @param {Element^} tl_graphic_container - box for graph
-    * @param {Array<Number>} x_way - x offset
     */
-  drawCanvasPoints: function(
-    tl_graphic_container,
-    x_way
-  ) {
+  drawCanvasPoints: function(tl_graphic_container) {
     if (this.canvas) {
       var graphic_index = TL_Q.getIndexByClassName(tl_graphic_container, 'tl_graphic_container');
       this.max_y = this.getAxesMaxY(graphic_index);
@@ -1079,7 +1073,7 @@ var TL_Graphic = {
         TL_Q.getParentByClassName(
           graphic,
           'tl_graphic_container'
-        ), this.x_way[num_c]
+        )
       );
     } else {
       TL_Q.removeClassName(
@@ -1110,7 +1104,7 @@ var TL_Graphic = {
         TL_Q.getParentByClassName(
           graphic,
           'tl_graphic_container'
-        ), this.x_way[num_c]
+        )
       );
     } else {
       TL_Q.addClassName(
@@ -1121,7 +1115,7 @@ var TL_Graphic = {
   },
   /**
     * Show nameplate
-    * @param {Element^} _that - circle
+    * @param {Element^} _that - g_circle
     */
   showNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
@@ -1183,7 +1177,7 @@ var TL_Graphic = {
   },
   /**
     * Hide nameplate
-    * @param {Element^} _that - circle
+    * @param {Element^} _that - g_circle
     */
   hideNameplate: function(_that) {
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
@@ -1248,7 +1242,7 @@ var TL_Graphic = {
   },
   /**
     * Theme initialization
-    * @param {Element^} _that - box for graph
+    * @param {Element^} _that - tl_graphic_container
     */
   initTheme: function(_that) {
     var tl_night_mode_span = TL_Q.$(_that, '.tl_night_mode span')[0];
@@ -1264,7 +1258,7 @@ var TL_Graphic = {
   },
   /**
     * Dark theme activation
-    * @param {Element^} _that - box for graph
+    * @param {Element^} _that - tl_night_mode span
     */
   activeDarkTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['day_mode'];
@@ -1326,7 +1320,7 @@ var TL_Graphic = {
   },
   /**
     * Day theme activation
-    * @param {Element^} _that - box for graph
+    * @param {Element^} _that - tl_night_mode span
     */
   activeDayTheme: function(_that) {
     _that.innerHTML = TL_Lang[TL_Lang.current]['night_mode'];
