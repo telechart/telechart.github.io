@@ -332,6 +332,7 @@ var TL_Graphic = {
   },
   compress_x: 50,
   compress_y: 70,
+  x_way: [],
   fill: '#fff',
   fill_dark: '#242f3e',
   minigraphic: true,
@@ -678,15 +679,15 @@ var TL_Graphic = {
     scroller_opacity.style.width = scroller.style.left;
     scroller_opacity_right.style.width = new_right + 'px';
     var tl_graphic_container = TL_Q.getParentByClassName(_that, 'tl_graphic_container');
-    var x_way = -(new_left * this.parts_x[index_tl_graphic_container]);
+    this.x_way[index_tl_graphic_container] = -(new_left * this.parts_x[index_tl_graphic_container]);
     var _that_that = this;
     Array.from(
       TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0].children
     ).forEach(function(e) {
       if (e.tagName == 'polyline') {
-        var transform = 'translate(' + x_way + ', ' + _that_that.graphic_height + ') scale(1, -1)';
+        var transform = 'translate(' + _that_that.x_way[index_tl_graphic_container] + ', ' + _that_that.graphic_height + ') scale(1, -1)';
       } else {
-        var transform = 'translate(' + x_way + ', 0)';
+        var transform = 'translate(' + _that_that.x_way[index_tl_graphic_container] + ', 0)';
       }
       TL_Q.attrs(e, {
         'transform': transform
@@ -694,7 +695,7 @@ var TL_Graphic = {
     });
     this.drawCanvasPoints(
       tl_graphic_container,
-      x_way
+      this.x_way[index_tl_graphic_container]
     );
     var x = new_right * this.parts_x[index_tl_graphic_container];
     var tl_x_coordinate = TL_Q.$(tl_graphic_container, '.tl_x_coordinate')[0];
@@ -794,7 +795,7 @@ var TL_Graphic = {
         this.container,
         'tl_graphic_container'
       );
-      var x_way = -((this.xs.length * this.compress_x) / this.parts_x[index_tl_graphic_container]) * (this.parts_x[index_tl_graphic_container] - 1);
+      this.x_way[index_tl_graphic_container] = -((this.xs.length * this.compress_x) / this.parts_x[index_tl_graphic_container]) * (this.parts_x[index_tl_graphic_container] - 1);
       if (this.canvas) {
         var tl_graphic_points = TL_Q.create('canvas', {
           'class': 'tl_graphic_points',
@@ -810,7 +811,7 @@ var TL_Graphic = {
       if (this.canvas) {
         var ctx = tl_graphic_points.getContext('2d');
         ctx.transform(1, 0, 0, -1, 0, tl_graphic_points.offsetHeight);
-        ctx.translate(x_way, 0);
+        ctx.translate(this.x_way[index_tl_graphic_container], 0);
         ctx.beginPath();
         ctx.strokeStyle = this.color;
         ctx.lineWidth = this.canvas_brush_width;
@@ -887,7 +888,7 @@ var TL_Graphic = {
     tl_graphic.appendChild(polyline);
     if (graphic_type) {
       TL_Q.attrs(polyline, {
-        'transform': 'translate(' + x_way + ', ' + graphic_height + ') scale(1, -1)'
+        'transform': 'translate(' + this.x_way[index_tl_graphic_container] + ', ' + graphic_height + ') scale(1, -1)'
       });
       if (this.canvas) {
         ctx.closePath();
@@ -895,7 +896,7 @@ var TL_Graphic = {
         ctx.fill();
       } else {
         TL_Q.attrs(g_points, {
-          'transform': 'translate(' + x_way + ', 0)'
+          'transform': 'translate(' + this.x_way[index_tl_graphic_container] + ', 0)'
         });
         tl_graphic.appendChild(g_points);
       }
@@ -908,8 +909,7 @@ var TL_Graphic = {
   /**
     * Drawing points in the raster
     * @param {Element^} tl_graphic_container - box for graph
-    * @param {Number} x_way - x offset
-    * @param {Array<Number>} ex - graphs exclusion
+    * @param {Array<Number>} x_way - x offset
     */
   drawCanvasPoints: function(
     tl_graphic_container,
@@ -929,7 +929,7 @@ var TL_Graphic = {
           }
           index++;
           ctx.setTransform(1, 0, 0, -1, 0, e.height);
-          ctx.translate(x_way, 0);
+          ctx.translate(_that.x_way[graphic_index], 0);
           ctx.beginPath();
           _that.xs = TL_Database[graphic_index]['columns'][0].slice();
           _that.xs.splice(0, 1);
@@ -1073,15 +1073,20 @@ var TL_Graphic = {
       [TL_Q.$(graphic, 'polyline')[num_p]],
       'tl_graphic_hide'
     );
+    TL_StoreDisplay.setVisible(num_c, num_p);
     if (this.canvas) {
-      //TODO:: Canvas-points reload
+      this.drawCanvasPoints(
+        TL_Q.getParentByClassName(
+          graphic,
+          'tl_graphic_container'
+        ), this.x_way[num_c]
+      );
     } else {
       TL_Q.removeClassName(
         [TL_Q.$(graphic, '.g_points')[num_p]],
         'tl_graphic_hide'
       );
     }
-    TL_StoreDisplay.setVisible(num_c, num_p);
   },
   /**
     * Hiding polyline
@@ -1099,15 +1104,20 @@ var TL_Graphic = {
       [TL_Q.$(graphic, 'polyline')[num_p]],
       'tl_graphic_hide'
     );
+    TL_StoreDisplay.setInvisible(num_c, num_p);
     if (this.canvas) {
-      // TODO:: Canvas-points reload
+      this.drawCanvasPoints(
+        TL_Q.getParentByClassName(
+          graphic,
+          'tl_graphic_container'
+        ), this.x_way[num_c]
+      );
     } else {
       TL_Q.addClassName(
         [TL_Q.$(graphic, '.g_points')[num_p]],
         'tl_graphic_hide'
       );
     }
-    TL_StoreDisplay.setInvisible(num_c, num_p);
   },
   /**
     * Show nameplate
