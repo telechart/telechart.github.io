@@ -289,6 +289,28 @@ var TL_StoreTheme = {
 
 'use strict';
 
+var TL_StoreDisplay = {
+  display_store_name: 'tl_v_graph_',
+  getState: function(num_c, num_p) {
+    return localStorage.getItem(
+      this.display_store_name + num_c + num_p
+    );
+  },
+  setInvisible: function(num_c, num_p) {
+    localStorage.setItem(
+      this.display_store_name + num_c + num_p,
+      true
+    );
+  },
+  setVisible: function(num_c, num_p) {
+    localStorage.removeItem(
+      this.display_store_name + num_c + num_p
+    );
+  }
+};
+
+'use strict';
+
 var TL_Graphic = {
   xs: [],
   ys: [],
@@ -630,6 +652,7 @@ var TL_Graphic = {
   },
   /**
     * Scroll graphic
+    * TODO:: reduce the number of input data
     **/
   scrollGraphic: function(
     _that, minigraphic_grid, new_left, new_right,
@@ -707,9 +730,6 @@ var TL_Graphic = {
         this.graphic_height,
         true
       );
-      if (this.graphic_buttons) {
-        this.drawButton();
-      }
     }
   },
   /**
@@ -728,6 +748,9 @@ var TL_Graphic = {
         this.minigraphic_height,
         false
       );
+    }
+    if (this.graphic_buttons) {
+      this.drawButton();
     }
   },
   /**
@@ -966,41 +989,69 @@ var TL_Graphic = {
           tl_graphic_title.innerText = this.title;
           tl_graphic_button.appendChild(tl_graphic_title);
     this.tl_graphic_buttons_row.appendChild(tl_graphic_buttons_cell);
-    var _that = this;
+    this.initButton(tl_checkbox_container);
+    var _that_that = this;
     tl_checkbox_container.onclick = function() {
-      TL_Q.removeClassName(
-        [this],
+      var _that = this;
+      _that_that.buttonClick(_that);
+    }
+  },
+  /**
+    * Button click
+    * @param {Element^} _that - tl_checkbox_container
+    */
+  buttonClick: function(_that) {
+    var nums = this.getButtonNumbers(_that);
+    TL_Q.removeClassName(
+      [_that],
+      'tl_checkbox_container--animation'
+    );
+    setTimeout(function() {
+      TL_Q.addClassName(
+        [_that],
         'tl_checkbox_container--animation'
       );
-      var _that_that = this;
-      setTimeout(function() {
-        TL_Q.addClassName(
-          [_that_that],
-          'tl_checkbox_container--animation'
-        );
-      });
-      var num_c = TL_Q.getIndexByClassName(
-        TL_Q.getParentByClassName(this, 'tl_graphic_container'),
-        'tl_graphic_container'
+    });
+    var tl_checkbox = _that.getElementsByClassName('tl_checkbox')[0];
+    if (_that.style.backgroundColor == _that.style.borderColor) {
+      _that.style.backgroundColor = 'transparent';
+      tl_checkbox.checked = false;
+      this.hidePolyline(
+        nums[0], nums[1]
       );
-      var num_p = TL_Q.getIndexByClassName(
-        TL_Q.getParentByClassName(this, 'tl_graphic_buttons_cell'),
-        'tl_graphic_buttons_cell'
+    } else {
+      _that.style.backgroundColor = _that.style.borderColor;
+      tl_checkbox.checked = true;
+      this.showPolyline(
+        nums[0], nums[1]
       );
-      if (this.style.backgroundColor == this.style.borderColor) {
-        this.style.backgroundColor = 'transparent';
-        tl_checkbox.checked = false;
-        _that.hidePolyline(
-          num_c, num_p
-        );
-      } else {
-        this.style.backgroundColor = this.style.borderColor;
-        tl_checkbox.checked = true;
-        _that.showPolyline(
-          num_c, num_p
-        );
-      }
     }
+  },
+  /**
+    * initialization button
+    * @param {Element^} _that - tl_checkbox_container
+    */
+  initButton: function(_that) {
+    var nums = this.getButtonNumbers(_that);
+    if (TL_StoreDisplay.getState(nums[0], nums[1])) {
+      this.buttonClick(_that);
+    }
+  },
+  /**
+    * Get button numbers pair
+    * @param {Element^} _that - tl_checkbox_container
+    * @return {Array}
+    */
+  getButtonNumbers: function(_that) {
+    return [
+      TL_Q.getIndexByClassName(
+        TL_Q.getParentByClassName(_that, 'tl_graphic_container'),
+        'tl_graphic_container'
+      ), TL_Q.getIndexByClassName(
+        TL_Q.getParentByClassName(_that, 'tl_graphic_buttons_cell'),
+        'tl_graphic_buttons_cell'
+      )
+    ];
   },
   /**
     * Showing polyline
@@ -1022,6 +1073,7 @@ var TL_Graphic = {
       [TL_Q.$(graphic, '.g_points')[num_p]],
       'tl_graphic_hide'
     );
+    TL_StoreDisplay.setVisible(num_c, num_p);
   },
   /**
     * Hiding polyline
@@ -1043,6 +1095,7 @@ var TL_Graphic = {
       [TL_Q.$(graphic, '.g_points')[num_p]],
       'tl_graphic_hide'
     );
+    TL_StoreDisplay.setInvisible(num_c, num_p);
   },
   /**
     * Show nameplate
