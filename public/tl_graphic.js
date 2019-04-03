@@ -1249,11 +1249,11 @@ var TL_Graphic = {
   clear: function() {
     this.xs = []; this.ys = [];
     this.max_y = 0; this.color = 'transparent';
-    this.title = ''; this.brush_width = 3; this.graphic = true;
+    this.title = ''; this.graphic = true;
     this.graphic_width = 0; this.graphic_height = 0;
     this.step_x = 0; this.step_y = 0; this.parts_x = []; this.parts_y = 5;
-    this.compress_x = 50; this.compress_y = 70; this.minigraphic = true;
-    this.minigraphic_width = 0; this.minigraphic_height = 0;
+    this.x_way = []; this.compress_x = 50; this.compress_y = 70;
+    this.minigraphic = true; this.minigraphic_width = 0; this.minigraphic_height = 0;
     this.graphic_buttons = true; this.night_mode = true;
     this.dark_theme = false; this.nameplate = true;
   },
