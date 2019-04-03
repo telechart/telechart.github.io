@@ -343,6 +343,7 @@ var TL_Graphic = {
   night_mode: true,
   dark_theme: false,
   nameplate: true,
+  nameplate_skip_info: true,
   types: ['line'],
   canvas: (location.hash == '#canvas' ? true: false),
   canvas_brush_width: 9,
@@ -1118,6 +1119,7 @@ var TL_Graphic = {
     * @param {Element^} _that - g_circle
     */
   showNameplate: function(_that) {
+    var _that_that = this;
     var index_circle = TL_Q.getIndexByClassName(_that, 'g_circle');
     var tl_graphic_main = TL_Q.getParentByClassName(_that, 'tl_graphic_main');
     var arr_g_points = TL_Q.$(tl_graphic_main, '.g_points');
@@ -1148,6 +1150,12 @@ var TL_Graphic = {
     data.splice(0, 1);
     data.forEach(
       function(element, index) {
+        if (
+          TL_StoreDisplay.getState(num_c, index) &&
+          _that_that.nameplate_skip_info
+        ) {
+          return;
+        }
         var tl_graphic_nameplate_y_c = TL_Q.create('div', {
           'class': 'tl_graphic_nameplate_y_c'
         });
