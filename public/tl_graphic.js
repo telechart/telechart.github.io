@@ -350,6 +350,7 @@ var TL_Graphic = {
   canvas_fill: '#fff',
   graphics_count: 0,
   cc_graphics_count: 0,
+  draw_location_reload: false,
   /**
     * Drawing graphs
     */
@@ -362,6 +363,14 @@ var TL_Graphic = {
         tl_graphic_container,
         TL_Database[i]
       );
+    }
+  },
+  redraw: function() {
+    if (this.draw_location_reload) {
+      location.reload();
+    } else {
+      this.clearMarkup();
+      this.draw();
     }
   },
   /**
@@ -1410,9 +1419,9 @@ window.onload = function() {
 })();
 window.addEventListener("optimizedResize", function() {
   if (!TL_Utils.isPhone()) {
-    location.reload();
+    TL_Graphic.redraw();
   }
 });
 window.addEventListener("orientationchange", function() {
-  location.reload();
+  TL_Graphic.redraw();
 });
