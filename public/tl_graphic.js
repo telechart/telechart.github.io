@@ -350,7 +350,7 @@ var TL_Graphic = {
   canvas_fill: '#fff',
   graphics_count: 0,
   cc_graphics_count: 0,
-  draw_location_reload: false,
+  draw_location_reload: true,
   /**
     * Drawing graphs
     */
