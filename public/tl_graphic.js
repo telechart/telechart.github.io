@@ -223,9 +223,13 @@ var TL_Q = {
     */
   getJSON: function(url) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open('GET', url, false);
     xhr.send();
-    return xhr;
+    if (xhr.status != 200) {
+      return false;
+    } else {
+      return xhr.responseText;
+    }
   }
 };
 
@@ -311,6 +315,8 @@ var TL_StoreDisplay = {
 
 'use strict';
 
+var TL_Database = {};
+
 var TL_Graphic = {
   xs: [],
   ys: [],
@@ -355,14 +361,18 @@ var TL_Graphic = {
     * Drawing graphs
     */
   draw: function() {
-    // Maybe TL_Q.getJSON('database/chart_data.json'); ?
-    for (var i = 0; i < TL_Database.length; i++) {
-      this.parts_x.push(this.max_parts_x);
-      var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
-      this.init(
-        tl_graphic_container,
-        TL_Database[i]
-      );
+    TL_Database = JSON.parse(
+      TL_Q.getJSON('database/chart_data.json')
+    );
+    if (TL_Database) {
+      for (var i = 0; i < TL_Database.length; i++) {
+        this.parts_x.push(this.max_parts_x);
+        var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
+        this.init(
+          tl_graphic_container,
+          TL_Database[i]
+        );
+      }
     }
   },
   redraw: function() {
