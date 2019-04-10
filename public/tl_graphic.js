@@ -230,6 +230,12 @@ var TL_Q = {
     } else {
       return xhr.responseText;
     }
+  },
+  getAJSON: function(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.send();
+    return xhr;
   }
 };
 
@@ -315,7 +321,7 @@ var TL_StoreDisplay = {
 
 'use strict';
 
-var TL_Database = {};
+var TL_Database = [];
 
 var TL_Graphic = {
   xs: [],
@@ -361,19 +367,23 @@ var TL_Graphic = {
     * Drawing graphs
     */
   draw: function() {
-    TL_Database = JSON.parse(
-      TL_Q.getJSON('database/chart_data.json')
-    );
-    if (TL_Database) {
-      for (var i = 0; i < TL_Database.length; i++) {
-        this.parts_x.push(this.max_parts_x);
-        var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
-        this.init(
-          tl_graphic_container,
-          TL_Database[i]
-        );
-      }
+    for (var i = 0; i < 5; i++) {
+      var k = i + 1;
+      TL_Database.push(
+        JSON.parse(
+          TL_Q.getJSON('database/contest/' + k + '/overview.json')
+        )
+      );
+      this.parts_x.push(this.max_parts_x);
+      var tl_graphic_container = TL_Q.$(document, '#tl_graphic_container_' + i)[0];
+      this.init(
+        tl_graphic_container,
+        TL_Database[i]
+      );
     }
+  },
+  asyncDraw: function() {
+    // TODO:: async
   },
   redraw: function() {
     if (this.draw_location_reload) {
@@ -864,7 +874,7 @@ var TL_Graphic = {
           ctx.arc(x, y, bias, 0, Math.PI * 2, true);
         } else {
           // Brakes...;()
-          var circle = TL_Q.createNS('circle', {
+          /*var circle = TL_Q.createNS('circle', {
             'class': 'g_circle',
             'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)',
             'cx': x, 'cy': y, 'r': 7,
@@ -882,7 +892,7 @@ var TL_Graphic = {
           circle.addEventListener('touchcancel', function() {
             _that.hideNameplate(this);
           });
-          g_points.appendChild(circle);
+          g_points.appendChild(circle);*/
         }
         if (this.tl_x_coordinate.children.length < this.xs.length) {
           var tl_y_line = TL_Q.create('div', {
