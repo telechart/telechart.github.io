@@ -344,7 +344,7 @@ var TL_Graphic = {
   dark_theme: false,
   nameplate: true,
   nameplate_skip_info: true,
-  types: ['line'],
+  types: ['line', 'area', 'bar'],
   canvas: (location.hash == '#canvas' ? true: false),
   canvas_brush_width: 9,
   canvas_fill: '#fff',
@@ -733,7 +733,7 @@ var TL_Graphic = {
   drawGraphic: function() {
     if (
       this.graphic &&
-      this.type.indexOf(this.types) != -1
+      this.types.indexOf(this.type) != -1
     ) {
       var index_tl_graphic_container = TL_Q.getIndexByClassName(
         this.container,
@@ -755,7 +755,7 @@ var TL_Graphic = {
   drawMinigraphic: function() {
     if (
       this.minigraphic &&
-      this.type.indexOf(this.types) != -1
+      this.types.indexOf(this.type) != -1
     ) {
       this.brush_width = 2;
       this.compress_x = this.minigraphic_width / (this.xs.length - 1);
@@ -802,7 +802,11 @@ var TL_Graphic = {
         this.container,
         'tl_graphic_container'
       );
-      this.x_way[index_tl_graphic_container] = -((this.xs.length * this.compress_x) / this.parts_x[index_tl_graphic_container]) * (this.parts_x[index_tl_graphic_container] - 1);
+      this.x_way[
+        index_tl_graphic_container
+      ] = -((this.xs.length * this.compress_x) /
+      this.parts_x[index_tl_graphic_container]) *
+      (this.parts_x[index_tl_graphic_container] - 1);
       if (this.canvas) {
         var tl_graphic_points = TL_Q.create('canvas', {
           'class': 'tl_graphic_points',
