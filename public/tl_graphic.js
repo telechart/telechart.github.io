@@ -735,7 +735,7 @@ var TL_Graphic = {
   getAxesMaxY: function(id) {
     var max_y = 0;
     var columns = TL_Database[id]['columns'];
-    columns.slice(1, columns.length - 1).forEach(
+    columns.slice(1, columns.length).forEach(
       function(e) {
         var d = e.slice();
         d.splice(0, 1);
