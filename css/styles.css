@@ -67,7 +67,6 @@ body {
 .tl_x_coordinate .tl_y_line {
   position: absolute;
   color: #8c8c8c;
-  float: right;
   width: 60px;
   text-align: center;
 }
