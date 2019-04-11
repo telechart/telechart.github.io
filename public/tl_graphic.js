@@ -901,7 +901,7 @@ var TL_Graphic = {
           tl_y_line.innerText = TL_Utils.convertTime(this.xs[this.xs.length - 1 - i]);
           this.tl_x_coordinate.appendChild(tl_y_line);
           tl_y_line.style.right = x + 'px';
-          if ((x - prev_y) > 80 || x == 0) {
+          if ((x - prev_y) > 100 || x == 0) {
             prev_y = x;
           } else {
             TL_Q.addClassName(
