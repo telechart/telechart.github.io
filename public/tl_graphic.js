@@ -73,6 +73,11 @@ var TL_Utils = {
     }
     return out;
   },
+  coordinateTransform(screenPoint, someSvgObject) {
+    return screenPoint.matrixTransform(
+      someSvgObject.getScreenCTM().inverse()
+    );
+  },
   isPhone: function() {
     // Better to do it in a separate library
     if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i.test(navigator.userAgent)) {
@@ -321,6 +326,71 @@ var TL_StoreDisplay = {
 
 'use strict';
 
+var TL_Nameplate = {
+  show: function(
+    tl_graphic_container_nameplate, values
+  ) {
+    var tl_graphic_container = TL_Q.getParentByClassName(tl_graphic_container_nameplate, 'tl_graphic_container');
+    var _that_that = this;
+    TL_Q.removeClassName(
+      [tl_graphic_container_nameplate],
+      'tl_graphic_hide'
+    );
+    var num_c = TL_Q.getIndexByClassName(
+      tl_graphic_container,
+      'tl_graphic_container'
+    );
+    var tl_graphic_nameplate_x = TL_Q.$(tl_graphic_container_nameplate, '.tl_graphic_nameplate_x')[0];
+    tl_graphic_nameplate_x.innerText = values.x.svg;
+    var tl_graphic_nameplate_y = TL_Q.$(tl_graphic_container_nameplate, '.tl_graphic_nameplate_y')[0];
+    tl_graphic_nameplate_y.innerHTML = '';
+    values['y'].forEach(
+      function(element, index) {
+        if (
+          TL_StoreDisplay.getState(num_c, index) &&
+          _that_that.nameplate_skip_info
+        ) {
+          return;
+        }
+        var tl_graphic_nameplate_y_c = TL_Q.create('div', {
+          'class': 'tl_graphic_nameplate_y_c'
+        });
+        tl_graphic_nameplate_y_c.innerText = element;
+        tl_graphic_nameplate_y_c.style.color = TL_Database[num_c]['colors']['y' + index];
+        tl_graphic_nameplate_y.appendChild(tl_graphic_nameplate_y_c);
+        var tl_graphic_nameplate_y_name = TL_Q.create('div', {
+          'class': 'tl_graphic_nameplate_y_name'
+        });
+        tl_graphic_nameplate_y_name.innerText = TL_Database[num_c]['names']['y' + index];
+        tl_graphic_nameplate_y_c.appendChild(tl_graphic_nameplate_y_name);
+      }
+    );
+    var shift = tl_graphic_container_nameplate.offsetWidth / 2 + 20;
+    tl_graphic_container_nameplate.style.left = (values.x.client - shift) + 'px';
+    var tl_graphic_container_nameplate_coords = TL_Utils.getCoords(tl_graphic_container_nameplate);
+    var tl_graphic_nameplate = TL_Q.$(tl_graphic_container_nameplate, '.tl_graphic_nameplate')[0];
+    var tl_graphic_main = TL_Q.$(tl_graphic_container, '.tl_graphic_main')[0];
+    var right = tl_graphic_main.getAttribute('width') - tl_graphic_nameplate.offsetWidth - tl_graphic_container_nameplate_coords.left;
+    if (right < 0) {
+      tl_graphic_nameplate.style.left = (right + 35) + 'px';
+    } else if (tl_graphic_container_nameplate_coords.left < 0) {
+      tl_graphic_nameplate.style.left = tl_graphic_container_nameplate_coords.left * (-1) + 'px';
+    } else {
+      tl_graphic_nameplate.style.left = '';
+    }
+  },
+  hide: function(_that) {
+    var tl_graphic_grid = TL_Q.getParentByClassName(_that, 'tl_graphic_grid');
+    var tl_graphic_container_nameplate = TL_Q.$(tl_graphic_grid, '.tl_graphic_container_nameplate')[0];
+    TL_Q.addClassName(
+      [tl_graphic_container_nameplate],
+      'tl_graphic_hide'
+    );
+  }
+};
+
+'use strict';
+
 var TL_Database = [];
 
 var TL_Graphic = {
@@ -363,6 +433,7 @@ var TL_Graphic = {
   graphics_count: 0,
   cc_graphics_count: 0,
   draw_location_reload: true,
+  draw_all_points: false,
   /**
     * Drawing graphs
     */
@@ -509,6 +580,15 @@ var TL_Graphic = {
         'width': this.graphic_width,
         'height': this.graphic_height
       });
+      if (!this.draw_all_points) {
+        var circle = TL_Q.createNS('circle', {
+          'class': 'g_circle',
+          'transform': 'translate(0, ' + this.graphic_height + ') scale(1, -1)',
+          'cx': 0, 'cy': 0, 'r': 7,
+          'style': 'stroke-width:' + (this.brush_width + 1)
+        });
+        this.tl_graphic_main.appendChild(circle);
+      }
     }
     if (this.minigraphic) {
       this.tl_minigraphic_grid = TL_Q.create('div', {
@@ -822,6 +902,7 @@ var TL_Graphic = {
         this.container,
         'tl_graphic_container'
       );
+      var tl_graphic_container_nameplate = TL_Q.$(this.container, '.tl_graphic_container_nameplate')[0];
       this.x_way[
         index_tl_graphic_container
       ] = -((this.xs.length * this.compress_x) /
@@ -872,9 +953,9 @@ var TL_Graphic = {
           var bias = this.canvas_brush_width / 2;
           ctx.moveTo(x + bias, y);
           ctx.arc(x, y, bias, 0, Math.PI * 2, true);
-        } else {
+        } else if (this.draw_all_points) {
           // Brakes...;()
-          /*var circle = TL_Q.createNS('circle', {
+          var circle = TL_Q.createNS('circle', {
             'class': 'g_circle',
             'transform': 'translate(0, ' + graphic_height + ') scale(1, -1)',
             'cx': x, 'cy': y, 'r': 7,
@@ -892,7 +973,7 @@ var TL_Graphic = {
           circle.addEventListener('touchcancel', function() {
             _that.hideNameplate(this);
           });
-          g_points.appendChild(circle);*/
+          g_points.appendChild(circle);
         }
         if (this.tl_x_coordinate.children.length < this.xs.length) {
           var tl_y_line = TL_Q.create('div', {
@@ -918,6 +999,44 @@ var TL_Graphic = {
       'style': 'fill:none;stroke:' + this.color + ';stroke-width:' + this.brush_width
     });
     tl_graphic.appendChild(polyline);
+    if (!this.draw_all_points) {
+      var point = tl_graphic.createSVGPoint();
+      polyline.addEventListener('mousemove', function(e) {
+        point.x = e.clientX;
+        point.y = e.clientY;
+        point = TL_Utils.coordinateTransform(point, polyline);
+        var a_points = points.trim().split(' ');
+        a_points.forEach(function(e, index) {
+          a_points[index] = Math.trunc(e.split(',')[0]);
+        });
+        var index = a_points.indexOf(Math.trunc(point.x));
+        if (index != -1) {
+          var values = {
+            x: {
+              svg: 0,
+              client: e.clientX
+            },
+            y: []
+          };
+          index++;
+          TL_Database[index_tl_graphic_container]['columns'].forEach(
+            function(e, i) {
+              if (i == 0) {
+                values.x.svg = TL_Utils.convertTimeWithDay(e[index]);
+              } else {
+                values.y.push(e[index]);
+              }
+            }
+          );
+          TL_Nameplate.show(
+            tl_graphic_container_nameplate, values
+          );
+        }
+      });
+      polyline.addEventListener('mouseout', function() {
+        TL_Nameplate.hide(this);
+      });
+    }
     if (graphic_type) {
       TL_Q.attrs(polyline, {
         'transform': 'translate(' + this.x_way[index_tl_graphic_container] + ', ' + graphic_height + ') scale(1, -1)'
@@ -926,7 +1045,7 @@ var TL_Graphic = {
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
-      } else {
+      } else if (this.draw_all_points) {
         TL_Q.attrs(g_points, {
           'transform': 'translate(' + this.x_way[index_tl_graphic_container] + ', 0)'
         });
@@ -1109,7 +1228,7 @@ var TL_Graphic = {
           'tl_graphic_container'
         )
       );
-    } else {
+    } else if (this.draw_all_points) {
       TL_Q.removeClassName(
         [TL_Q.$(graphic, '.g_points')[num_p]],
         'tl_graphic_hide'
@@ -1140,7 +1259,7 @@ var TL_Graphic = {
           'tl_graphic_container'
         )
       );
-    } else {
+    } else if (this.draw_all_points) {
       TL_Q.addClassName(
         [TL_Q.$(graphic, '.g_points')[num_p]],
         'tl_graphic_hide'
